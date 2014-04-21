@@ -12,6 +12,8 @@ class Main
         game.load.image('tiles', 'assets/tiles.png')
         game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON)
 
+        game.load.audio('engine', ['assets/engine.ogg'])
+
     create: ->
         game.physics.startSystem(Phaser.Physics.P2JS)
         game.physics.p2.world.gravity = [0, tweaks.gravity]
@@ -39,6 +41,9 @@ class Main
         # Controls
         @cursorKeys = game.input.keyboard.createCursorKeys()
 
+        # Audio
+        @engineSound = game.add.audio('engine', 1, true)
+
     update: ->
         cursorKeys = @cursorKeys
         if cursorKeys.left.isDown
@@ -52,12 +57,14 @@ class Main
             @ship.body.thrust(tweaks.thrust)
             if not @thrusting
                 @exhaustEmitter.start(false, 500, 10, 0)
+                @engineSound.play('', undefined, undefined, true)
             @thrusting = true
         else
             if @thrusting
                 @thrusting = false
                 # "Stop" the emitter by setting a long interval
                 @exhaustEmitter.start(false, 0, 1e9)
+                @engineSound.stop()
 
         a = @ship.body.angle / 180 * Math.PI
         xOffset = -Math.sin(a) * 16
