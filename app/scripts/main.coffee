@@ -2,6 +2,7 @@ tweaks =
     turn: 100
     thrust: 180
     gravity: -2
+    particleGravity: 100
 
 class Main
 
@@ -17,9 +18,9 @@ class Main
 
         # Exhaust particles
         # Add before Tilemap so they are behind it
-        @exhaustEmitter = game.add.emitter(game.world.centerX, 200, 400)
+        @exhaustEmitter = game.add.emitter(0, 0, 50)
         @exhaustEmitter.makeParticles('exhaust')
-        @exhaustEmitter.gravity = tweaks.gravity
+        @exhaustEmitter.gravity = tweaks.particleGravity
 
         # Tilemap
         @tilemap = game.add.tilemap('map')
