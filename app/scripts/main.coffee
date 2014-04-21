@@ -68,6 +68,7 @@ class Main
         ySpeed = Math.cos(a) * tweaks.thrust + @ship.body.velocity.y
         @exhaustEmitter.setXSpeed(xSpeed - 40, xSpeed + 40)
         @exhaustEmitter.setYSpeed(ySpeed - 40, ySpeed + 40)
+        @exhaustEmitter.addAll('alpha', -.02)
 
         particlesToDestroy = []
         game.physics.arcade.collide(@exhaustEmitter, @layer, (particle, tile) ->
