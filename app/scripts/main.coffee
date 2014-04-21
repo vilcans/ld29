@@ -9,6 +9,8 @@ cursorKeys = null
 ship = null
 exhaustEmitter = null
 thrusting = false
+map = null
+layer = null
 
 gameStates.preload = ->
     game.load.image('ship', 'assets/ship.png')
@@ -71,6 +73,12 @@ gameStates.update = ->
     ySpeed = Math.cos(a) * tweaks.thrust + ship.body.velocity.y
     exhaustEmitter.setXSpeed(xSpeed - 40, xSpeed + 40)
     exhaustEmitter.setYSpeed(ySpeed - 40, ySpeed + 40)
+
+    particlesToDestroy = []
+    game.physics.arcade.collide(exhaustEmitter, layer, (particle, tile) ->
+        particlesToDestroy.push(particle)
+    )
+    p.destroy() for p in particlesToDestroy
 
 gameStates.render = ->
 
