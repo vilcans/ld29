@@ -37,7 +37,7 @@ def get_hash():
 
 @task
 def clean_build():
-    local('rm -r dist')
+    local('rm -fr dist')
     local('grunt build')
 
 @task
