@@ -20,6 +20,12 @@ gameStates.create = ->
     game.physics.startSystem(Phaser.Physics.P2JS)
     game.physics.p2.world.gravity = [0, tweaks.gravity]
 
+    # Exhaust particles
+    # Add before Tilemap so they are behind it
+    exhaustEmitter = game.add.emitter(game.world.centerX, 200, 400)
+    exhaustEmitter.makeParticles('exhaust')
+    exhaustEmitter.gravity = tweaks.gravity
+
     # Tilemap
     map = game.add.tilemap('map')
     map.addTilesetImage('tiles')
@@ -33,10 +39,6 @@ gameStates.create = ->
     game.physics.p2.enable(ship)
 
     game.camera.follow(ship)
-
-    exhaustEmitter = game.add.emitter(game.world.centerX, 200, 400)
-    exhaustEmitter.makeParticles('exhaust')
-    exhaustEmitter.gravity = tweaks.gravity
 
     # Controls
     cursorKeys = game.input.keyboard.createCursorKeys()
