@@ -71,7 +71,7 @@ class Main
         @exhaustEmitter.addAll('alpha', -.02)
 
         game.physics.arcade.collide(@exhaustEmitter, @tileLayer, (particle, tile) ->
-            particle.kill()
+            particle.alpha *= .5
         )
         return
 
