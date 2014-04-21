@@ -70,11 +70,9 @@ class Main
         @exhaustEmitter.setYSpeed(ySpeed - 40, ySpeed + 40)
         @exhaustEmitter.addAll('alpha', -.02)
 
-        particlesToDestroy = []
-        game.physics.arcade.collide(@exhaustEmitter, @layer, (particle, tile) ->
-            particlesToDestroy.push(particle)
+        game.physics.arcade.collide(@exhaustEmitter, @tileLayer, (particle, tile) ->
+            particle.kill()
         )
-        p.destroy() for p in particlesToDestroy
         return
 
     render: ->
