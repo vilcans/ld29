@@ -1,8 +1,10 @@
 tweaks =
     turn: 100
-    thrust: 180
-    gravity: -2
+    thrust: 250
+    gravity: -4
     particleGravity: 100
+    debugPhysics: true
+    exhaustSpeed: 30
 
 class Main
 
@@ -13,6 +15,8 @@ class Main
         game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON)
 
         game.load.audio('engine', ['assets/engine.ogg'])
+
+        game.load.physics('physicsData', 'assets/shapes.json')
 
     create: ->
         game.physics.startSystem(Phaser.Physics.P2JS)
@@ -34,7 +38,9 @@ class Main
 
         # Ship
         @ship = game.add.sprite(200, 200, 'ship')
-        game.physics.p2.enable(@ship)
+        game.physics.p2.enable(@ship, tweaks.debugPhysics)
+        @ship.body.clearShapes()
+        @ship.body.loadPolygon('physicsData', 'ship')
 
         game.camera.follow(@ship)
 
