@@ -7,5 +7,5 @@ test/bower_components
 
 # Deployment
 *.pyc
-releases.git/
+*-releases.git/
 version.txt

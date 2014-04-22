@@ -13,6 +13,7 @@ deploy_host = repo_host = 'martin@vilcon.se'
 install_dir = '/opt/%s' % project_name
 releases_repo_path = '/home/martin/releases/' + project_name + '.git'
 releases_repo_remote = '%s:%s' % (repo_host, releases_repo_path)
+releases_mirror = project_name + '-releases.git'
 
 def check_working_dir_clean():
     """Aborts if not everything has been committed."""
@@ -59,12 +60,12 @@ def release_only(version=None):
 
     """
 
-    if not os.path.exists('releases.git'):
+    if not os.path.exists(releases_mirror):
         clone_releases_repo()
 
     def git(command, **kwargs):
         return local(
-            'git --work-tree=. --git-dir=releases.git ' + command,
+            'git --work-tree=. --git-dir=' + releases_mirror + ' ' + command,
             **kwargs
         )
 
@@ -123,9 +124,9 @@ def set_version_number(version):
 @task
 def clone_releases_repo():
     """Clones the releases repo into releases.git."""
-    local('git clone --bare %s releases.git' % releases_repo_remote)
+    local('git clone --bare %s %s' % (releases_repo_remote, releases_mirror))
     #local('git --git-dir=releases.git config core.bare false')
-    local('git --git-dir=releases.git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"')
+    local('git --git-dir=%s config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"' % releases_mirror)
 
 @task
 @hosts(deploy_host)
@@ -167,6 +168,7 @@ def create_releases_repo():
 
 @task
 @hosts(deploy_host)
-def reload_nginx():
+def nginx():
+    sudo('ln -sf %s/nginx.conf /etc/nginx/conf.d/%s.conf' % (install_dir, project_name))
     sudo('service nginx configtest')
     sudo('service nginx reload')
