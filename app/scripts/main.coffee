@@ -3,7 +3,7 @@ tweaks =
     thrust: 250
     gravity: -4
     particleGravity: 100
-    debugPhysics: true
+    debugPhysics: false
     exhaustSpeed: 30
 
 center = (sprite) ->
