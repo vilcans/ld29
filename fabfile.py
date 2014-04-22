@@ -168,6 +168,7 @@ def create_releases_repo():
 
 @task
 @hosts(deploy_host)
-def reload_nginx():
+def nginx():
+    sudo('ln -sf %s/nginx.conf /etc/nginx/conf.d/%s.conf' % (install_dir, project_name))
     sudo('service nginx configtest')
     sudo('service nginx reload')
