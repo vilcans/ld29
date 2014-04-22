@@ -6,6 +6,9 @@ tweaks =
     debugPhysics: true
     exhaustSpeed: 30
 
+# For documentation about states, see
+# https://github.com/photonstorm/phaser/wiki/Phaser-General-Documentation-:-States
+
 class InGameState
 
     preload: ->
@@ -94,9 +97,45 @@ class InGameState
 
     render: ->
 
+class MenuState
+    create: ->
+        game = @game
+        center = (sprite) ->
+            sprite.position.x = game.world.centerX - sprite.width / 2
+
+        center(
+            @game.add.text(
+                0, 40,
+                'Warming up for Ludum Dare 29',
+                style = { font: '24px Arial', fill: '#8800ff', align: 'center' }
+            )
+        )
+
+        center(
+            @game.add.text(
+                0, 86,
+                'by Martin Vilcans',
+                style = { font: '16px Arial', fill: '#8800ff', align: 'center' }
+            )
+        )
+
+        @startButton = @game.add.text(
+            0, 450,
+            'Start',
+            style = { font: '32px Arial', fill: '#ffffff', align: 'center' }
+        )
+        @startButton.inputEnabled = true
+        @startButton.events.onInputDown.add(
+            (object, pointer) ->
+                @game.state.start('ingame')
+            this
+        )
+        center(@startButton)
+
 start = ->
     game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29')
     game.state.add('ingame', InGameState)
-    game.state.start('ingame')
+    game.state.add('menu', MenuState)
+    game.state.start('menu')
 
 start()
