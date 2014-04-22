@@ -111,15 +111,15 @@ class MenuState
         center(
             @game.add.text(
                 0, 40,
-                'Warming up for Ludum Dare 29',
-                style = { font: '24px Arial', fill: '#8800ff', align: 'center' }
+                'Collide and Die',
+                style = { font: '32px Arial', fill: '#8800ff', align: 'center' }
             )
         )
-
         center(
             @game.add.text(
                 0, 86,
-                'by Martin Vilcans',
+                'Left and right arrow keys to turn. Up for thrust.\n' +
+                'There is no winning this. Just me, Martin Vilcans, warming up for Ludum Dare 29',
                 style = { font: '16px Arial', fill: '#8800ff', align: 'center' }
             )
         )
