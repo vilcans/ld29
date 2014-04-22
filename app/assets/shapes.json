@@ -1,12 +1,14 @@
 {
     "ship": [
         {
-            "density": 2, "friction": 0, "bounce": 0,
-            "shape": [
-                16, 31,
-                0, 29,
-                16, 0,
-                31, 29
+            "isSensor": false,
+            "filter": {
+                "group": 0,
+                "categoryBits": 1,
+                "maskBits": 65535
+            },
+            "polygons": [
+                [16, 31,0, 29,16, 0,31, 29]
             ]
         }
     ]

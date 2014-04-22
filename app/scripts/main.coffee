@@ -53,7 +53,7 @@ class InGameState
         @ship = game.add.sprite(50, 50, 'ship')
         game.physics.p2.enable(@ship, tweaks.debugPhysics)
         @ship.body.clearShapes()
-        @ship.body.loadPolygon('physicsData', 'ship')
+        @ship.body.addPhaserPolygon('physicsData', 'ship')
         @ship.body.onBeginContact.add(@shipHit, this)
 
         game.camera.follow(@ship)
