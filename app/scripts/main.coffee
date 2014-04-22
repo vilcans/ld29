@@ -6,6 +6,10 @@ tweaks =
     debugPhysics: true
     exhaustSpeed: 30
 
+center = (sprite) ->
+    sprite.position.x = 400 - sprite.width / 2
+    return sprite
+
 # For documentation about states, see
 # https://github.com/photonstorm/phaser/wiki/Phaser-General-Documentation-:-States
 
@@ -42,10 +46,11 @@ class InGameState
         game.physics.p2.convertTilemap(@tilemap, @tileLayer)
 
         # Ship
-        @ship = game.add.sprite(200, 200, 'ship')
+        @ship = game.add.sprite(50, 50, 'ship')
         game.physics.p2.enable(@ship, tweaks.debugPhysics)
         @ship.body.clearShapes()
         @ship.body.loadPolygon('physicsData', 'ship')
+        @ship.body.onBeginContact.add(@shipHit, this)
 
         game.camera.follow(@ship)
 
@@ -54,6 +59,10 @@ class InGameState
 
         # Audio
         @engineSound = game.add.audio('engine', 1, true)
+
+    shipHit: ->
+        @engineSound.stop()
+        @game.state.start('over')
 
     update: ->
         game = @game
@@ -99,10 +108,6 @@ class InGameState
 
 class MenuState
     create: ->
-        game = @game
-        center = (sprite) ->
-            sprite.position.x = game.world.centerX - sprite.width / 2
-
         center(
             @game.add.text(
                 0, 40,
@@ -119,10 +124,12 @@ class MenuState
             )
         )
 
-        @startButton = @game.add.text(
-            0, 450,
-            'Start',
-            style = { font: '32px Arial', fill: '#ffffff', align: 'center' }
+        @startButton = center(
+            @game.add.text(
+                0, 450,
+                'Start',
+                style = { font: '32px Arial', fill: '#8800ff', align: 'center' }
+            )
         )
         @startButton.inputEnabled = true
         @startButton.events.onInputDown.add(
@@ -130,12 +137,31 @@ class MenuState
                 @game.state.start('ingame')
             this
         )
-        center(@startButton)
+
+class GameOverState
+    create: ->
+        center(@game.add.text(
+            0, 40,
+            'Game Over',
+            style = { font: '32px Arial', fill: '#ffffff', align: 'center' }
+        ))
+        @restartButton = center(@game.add.text(
+            0, 450,
+            'Restart',
+            style = { font: '32px Arial', fill: '#8800ff', align: 'center' }
+        ))
+        @restartButton.inputEnabled = true
+        @restartButton.events.onInputDown.add(
+            (object, pointer) ->
+                @game.state.start('menu')
+            this
+        )
 
 start = ->
     game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29')
     game.state.add('ingame', InGameState)
     game.state.add('menu', MenuState)
+    game.state.add('over', GameOverState)
     game.state.start('menu')
 
 start()
