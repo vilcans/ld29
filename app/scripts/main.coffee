@@ -6,9 +6,10 @@ tweaks =
     debugPhysics: true
     exhaustSpeed: 30
 
-class Main
+class InGameState
 
     preload: ->
+        game = @game
         game.load.image('ship', 'assets/ship.png')
         game.load.image('exhaust', 'assets/exhaust.png')
         game.load.image('tiles', 'assets/tiles.png')
@@ -19,6 +20,7 @@ class Main
         game.load.physics('physicsData', 'assets/shapes.json')
 
     create: ->
+        game = @game
         game.physics.startSystem(Phaser.Physics.P2JS)
         game.physics.p2.world.gravity = [0, tweaks.gravity]
 
@@ -51,6 +53,8 @@ class Main
         @engineSound = game.add.audio('engine', 1, true)
 
     update: ->
+        game = @game
+
         cursorKeys = @cursorKeys
         if cursorKeys.left.isDown
             @ship.body.rotateLeft(tweaks.turn)
@@ -90,10 +94,9 @@ class Main
 
     render: ->
 
-main = new Main
-game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29',
-    preload: -> main.preload()
-    create: -> main.create()
-    update: -> main.update()
-    render: -> main.render()
-)
+start = ->
+    game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29')
+    game.state.add('ingame', InGameState)
+    game.state.start('ingame')
+
+start()
