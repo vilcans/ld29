@@ -7,7 +7,7 @@ from fabric.context_managers import prefix, cd, settings, hide
 from fabric.colors import green, yellow
 from fabric.contrib.files import exists
 
-project_name = 'ld29'
+project_name = 'warmup29'
 deploy_host = repo_host = 'martin@vilcon.se'
 
 install_dir = '/opt/%s' % project_name
