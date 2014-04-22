@@ -16,6 +16,8 @@ center = (sprite) ->
 class InGameState
 
     preload: ->
+        Tracking.trackEvent 'ingame', 'preload'
+
         game = @game
         game.load.image('ship', 'assets/ship.png')
         game.load.image('exhaust', 'assets/exhaust.png')
@@ -27,6 +29,8 @@ class InGameState
         game.load.physics('physicsData', 'assets/shapes.json')
 
     create: ->
+        Tracking.trackEvent 'ingame', 'create'
+
         game = @game
         game.physics.startSystem(Phaser.Physics.P2JS)
         game.physics.p2.world.gravity = [0, tweaks.gravity]
@@ -62,6 +66,7 @@ class InGameState
 
     shipHit: ->
         @engineSound.stop()
+        Tracking.trackEvent 'ingame', 'shipHit'
         @game.state.start('over')
 
     update: ->
@@ -108,6 +113,8 @@ class InGameState
 
 class MenuState
     create: ->
+        Tracking.trackEvent 'menu', 'create'
+
         center(
             @game.add.text(
                 0, 40,
@@ -140,6 +147,8 @@ class MenuState
 
 class GameOverState
     create: ->
+        Tracking.trackEvent 'over', 'create'
+
         center(@game.add.text(
             0, 40,
             'Game Over',
