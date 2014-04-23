@@ -10,6 +10,8 @@ center = (sprite) ->
     sprite.position.x = 400 - sprite.width / 2
     return sprite
 
+global = {}
+
 # For documentation about states, see
 # https://github.com/photonstorm/phaser/wiki/Phaser-General-Documentation-:-States
 
@@ -166,11 +168,23 @@ class GameOverState
             this
         )
 
+class LoadingState
+    preload: ->
+        @game.load.audio('music', ['assets/warmup.ogg'])
+
+    create: ->
+        global.music = @game.add.audio('music', 1, true)
+        global.music.play('', undefined, undefined, true)
+        @game.state.start('menu')
+
+
 start = ->
     game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29')
+
     game.state.add('ingame', InGameState)
     game.state.add('menu', MenuState)
     game.state.add('over', GameOverState)
-    game.state.start('menu')
+    game.state.add('loading', LoadingState)
+    game.state.start('loading')
 
 start()
