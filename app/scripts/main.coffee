@@ -1,11 +1,15 @@
-gameStates = {}
+class MainState
+    preload: ->
 
-gameStates.preload = ->
+    create: ->
 
-gameStates.create = ->
+    update: ->
 
-gameStates.update = ->
+    render: ->
 
-gameStates.render = ->
+start = ->
+    game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29')
+    game.state.add('main', MainState)
+    game.state.start('main')
 
-game = new Phaser.Game(800, 600, Phaser.AUTO, 'LD29', gameStates)
+start()
