@@ -7,7 +7,8 @@ tweaks =
     exhaustSpeed: 30
 
 center = (sprite) ->
-    sprite.position.x = 400 - sprite.width / 2
+    sprite.position.x = 400
+    sprite.anchor.x = .5
     return sprite
 
 global = {}
