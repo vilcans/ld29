@@ -11,10 +11,7 @@ class Snake
         if @headDistance >= edgeLength
             if @nextNode == null
                 @headDistance = edgeLength
-                head = @getHeadNode()
-                candidateNeighbors = (+i for i, n of head.neighbors when +i != @nodes[1])
-                @nextNode = candidateNeighbors[Math.floor(Math.random() * candidateNeighbors.length)]
-                #console.log 'candiates with neighbors ', head.neighbors, 'nodes', @nodes[0..3], ':', candidateNeighbors, 'picking', n
+                return
 
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
@@ -62,7 +59,7 @@ graph = {
         {x: 100, y: 100},  # 4
         {x: 250, y: 100},  # 5
         {x:   0, y: 200},  # 6
-        {x: 100, y: 200},  # 7
+        {x: 100, y: 400},  # 7
         {x: 200, y: 150},  # 8
     ]
     edges: [
@@ -124,7 +121,7 @@ class MainState
         directionToNode = tempPoint2
 
         bestNodeIndex = null
-        bestScore = 0
+        bestScore = -1.1
         for neighborIndex, neighbor of head.neighbors
             if neighborIndex == @snake.nodes[1]
                 # Can't go back
@@ -138,7 +135,7 @@ class MainState
                 bestNodeIndex = neighborIndex
 
         if bestNodeIndex != null
-            console.log 'best node', bestNodeIndex, 'score', bestScore
+            #console.log 'best node', bestNodeIndex, 'score', bestScore
             @snake.nextNode = bestNodeIndex
 
             next = graph.nodes[@snake.nextNode]
