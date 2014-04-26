@@ -146,7 +146,7 @@ class MainState
     render: ->
 
 start = ->
-    game = new Phaser.Game(320, 480, Phaser.AUTO, 'LD29')
+    game = new Phaser.Game(320, 480, Phaser.AUTO, 'game')
     game.state.add('main', MainState)
     game.state.start('main')
 
