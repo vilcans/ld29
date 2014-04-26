@@ -9,11 +9,13 @@ class Snake
         @headDistance += distance
         edgeLength = @getEdgeLength()
         if @headDistance >= edgeLength
-            @headDistance -= edgeLength
-            #console.log 'Switching towards node', @nextNode
-            console.assert @nextNode != null, 'no next node'
-            @nodes.unshift(@nextNode)
-            @nextNode = null
+            if @nextNode == null
+                @headDistance = edgeLength
+            else
+                @headDistance -= edgeLength
+                #console.log 'Switching towards node', @nextNode
+                @nodes.unshift(@nextNode)
+                @nextNode = null
 
     getHeadNode: -> @graph.nodes[@nodes[0]]
     getNeckNode: -> @graph.nodes[@nodes[1]]
