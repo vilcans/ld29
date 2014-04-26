@@ -62,6 +62,17 @@ graph = {
     ]
 }
 
+for edge in graph.edges
+    [node1Index, node2Index] = edge
+    node1 = graph.nodes[node1Index]
+    node2 = graph.nodes[node2Index]
+
+    node1.neighbors ?= {}
+    node1.neighbors[node2Index] = node2
+    node2.neighbors ?= {}
+    node2.neighbors[node1Index] = node1
+
+
 class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
@@ -76,6 +87,22 @@ class MainState
         @snake.nextNode = 4
         @snake.sprite = @game.add.sprite(20, 20, 'head')
         @snake.sprite.anchor.set(.5, .5)
+
+        @game.input.onDown.add(
+            (pointer, mouseEvent) ->
+                #console.log 'down', arguments
+                @select(pointer.x, pointer.y)
+            this
+        )
+
+    select: (x, y) ->
+        head = @snake.getHeadNode()
+        for neighborIndex, neighbor of head.neighbors
+            if (Math.pow(neighbor.x - x, 2) + Math.pow(neighbor.y - y, 2)) < (Math.pow(20, 2))
+                @graphGraphics.drawCircle(neighbor.x, neighbor.y, 20)
+                console.log 'heading towards', neighborIndex
+                @snake.nextNode = neighborIndex
+                return
 
     drawGraph: ->
         for edge in graph.edges
