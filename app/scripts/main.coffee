@@ -97,6 +97,8 @@ class MainState
         @graphGraphics.lineStyle(1, 0x880088, 1.0)
         @drawGraph()
 
+        @selectedEdgeGraphics = @game.add.graphics(0, 0)
+
         @snakeGraphics = @game.add.graphics(0, 0)
 
         @snake = new Snake(graph, 0, 1)
@@ -115,9 +117,15 @@ class MainState
         head = @snake.getHeadNode()
         for neighborIndex, neighbor of head.neighbors
             if (Math.pow(neighbor.x - x, 2) + Math.pow(neighbor.y - y, 2)) < (Math.pow(20, 2))
-                @graphGraphics.drawCircle(neighbor.x, neighbor.y, 20)
-                console.log 'heading towards', neighborIndex
+                #console.log 'heading towards', neighborIndex
                 @snake.nextNode = neighborIndex
+
+                next = graph.nodes[@snake.nextNode]
+                @selectedEdgeGraphics.clear()
+                @selectedEdgeGraphics.lineStyle(4, 0x8888ff, 1.0)
+                @selectedEdgeGraphics.moveTo(head.x, head.y)
+                @selectedEdgeGraphics.lineTo(next.x, next.y)
+
                 return
 
     drawGraph: ->
