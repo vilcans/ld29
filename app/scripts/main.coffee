@@ -20,6 +20,7 @@ graph = {
         [1, 4], [4, 7],
         [2, 5], [5, 8],
     ]
+}
 
 class MainState
     preload: ->
