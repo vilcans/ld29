@@ -131,6 +131,7 @@ class MainState
         bestNodeIndex = null
         bestScore = -1.1
         for neighborIndex, neighbor of head.neighbors
+            neighborIndex = +neighborIndex
             if neighborIndex == @snake.nodes[1]
                 # Can't go back
                 continue
