@@ -7,7 +7,7 @@ class Snake
 
     move: (distance) ->
         @headDistance += distance
-        edgeLength = @getEdgeLength()
+        edgeLength = @getEdgeLength(0)
         if @headDistance >= edgeLength
             if @nextNode == null
                 @headDistance = edgeLength
@@ -19,24 +19,35 @@ class Snake
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
             @nodes.unshift(@nextNode)
+            if @nodes.length > 5
+                @nodes.pop()
             @nextNode = null
 
+    # Get the node that this snake is moving towards
     getHeadNode: -> @graph.nodes[@nodes[0]]
+
+    # Get the node that this snake just moved over
     getNeckNode: -> @graph.nodes[@nodes[1]]
 
-    # Get the length of the current edge
-    getEdgeLength: ->
-        headNode = @getHeadNode()
-        neckNode = @getNeckNode()
+    getTailNode: -> @graph.nodes[@nodes[@nodes.length - 1]]
+
+    getTailBaseNode: -> @graph.nodes[@nodes[@nodes.length - 2]]
+
+    # Get the length of an edge
+    # segmentIndex is the segment to check, 0 for head to neck,
+    # 1 for neck to next segment etc.
+    getEdgeLength: (segmentIndex) ->
+        node1 = @graph.nodes[@nodes[segmentIndex]]
+        node2 = @graph.nodes[@nodes[segmentIndex + 1]]
         return Math.sqrt(
-            Math.pow(headNode.x - neckNode.x, 2) +
-            Math.pow(headNode.y - neckNode.y, 2)
+            Math.pow(node1.x - node2.x, 2) +
+            Math.pow(node1.y - node2.y, 2)
         )
 
     getHeadPosition: ->
         headNode = @getHeadNode()
         neckNode = @getNeckNode()
-        fraction = @headDistance / @getEdgeLength()
+        fraction = @headDistance / @getEdgeLength(0)
         return {
             x: neckNode.x + fraction * (headNode.x - neckNode.x),
             y: neckNode.y + fraction * (headNode.y - neckNode.y)
@@ -126,8 +137,10 @@ class MainState
         @snakeGraphics.clear()
         @snakeGraphics.lineStyle(3, 0xffffff, .6)
         @snakeGraphics.moveTo pos.x, pos.y
-        for nodeIndex in @snake.nodes[1..]
-            node = graph.nodes[nodeIndex]
+        # Drawing a line of length 0 makes the *next* line disappear,
+        # hence the check for headDistance
+        for i in [(if @snake.headDistance > 0 then 1 else 2)...@snake.nodes.length]
+            node = graph.nodes[@snake.nodes[i]]
             @snakeGraphics.lineTo(node.x, node.y)
 
     render: ->
