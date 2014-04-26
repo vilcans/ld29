@@ -11,9 +11,12 @@ class Snake
 
         if @headDistance >= edgeLength
 
-            for i in [1...@nodes.length]
+            i = @nodes.length
+            while --i >= 1
                 if @nodes[i] == @nodes[0]
                     console.log 'Hit myself in nodes', @nodes[..i]
+                    console.log 'nodes are', @nodes
+                    captureEdges(@getEdges())
                     @nodes = [@nodes[0]]
                     break
 
@@ -24,9 +27,10 @@ class Snake
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
             @nodes.unshift(@nextNode)
-            if @nodes.length > 8
-                @nodes.pop()
+            #if @nodes.length > 8
+            #    @nodes.pop()
             @nextNode = null
+
 
     # Get the node that this snake is moving towards
     getHeadNode: -> @graph.nodes[@nodes[0]]
