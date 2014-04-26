@@ -4,6 +4,10 @@ body {
     color: #333;
 }
 
+#game {
+	cursor: crosshair;
+}
+
 .browsehappy {
     margin: 0.2em 0;
     background: #ccc;
