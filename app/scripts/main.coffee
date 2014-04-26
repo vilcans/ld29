@@ -1,14 +1,52 @@
+class Snake
+    constructor: (@graph, startNode, nextNode) ->
+        @nodes = [nextNode, startNode]
+        @headDistance = 0
+        @tailDistance = 0
+        @nextNode = null
+
+    move: (distance) ->
+        @headDistance += distance
+        edgeLength = @getEdgeLength()
+        if @headDistance >= edgeLength
+            @headDistance -= edgeLength
+            #console.log 'Switching towards node', @nextNode
+            console.assert @nextNode != null, 'no next node'
+            @nodes.unshift(@nextNode)
+            @nextNode = null
+
+    getHeadNode: -> @graph.nodes[@nodes[0]]
+    getNeckNode: -> @graph.nodes[@nodes[1]]
+
+    # Get the length of the current edge
+    getEdgeLength: ->
+        headNode = @getHeadNode()
+        neckNode = @getNeckNode()
+        return Math.sqrt(
+            Math.pow(headNode.x - neckNode.x, 2) +
+            Math.pow(headNode.y - neckNode.y, 2)
+        )
+
+    getHeadPosition: ->
+        headNode = @getHeadNode()
+        neckNode = @getNeckNode()
+        fraction = @headDistance / @getEdgeLength()
+        return {
+            x: neckNode.x + fraction * (headNode.x - neckNode.x),
+            y: neckNode.y + fraction * (headNode.y - neckNode.y)
+        }
+
 graph = {
     nodes: [
         {x:   0, y:   0},  # 0
         {x: 100, y:   0},  # 1
-        {x: 200, y:   0},  # 2
+        {x: 250, y:   0},  # 2
         {x:   0, y: 100},  # 3
         {x: 100, y: 100},  # 4
-        {x: 200, y: 100},  # 5
+        {x: 250, y: 100},  # 5
         {x:   0, y: 200},  # 6
         {x: 100, y: 200},  # 7
-        {x: 200, y: 200},  # 8
+        {x: 200, y: 150},  # 8
     ]
     edges: [
         # horizontal
@@ -24,29 +62,35 @@ graph = {
 
 class MainState
     preload: ->
+        @game.load.image('head', 'assets/head.png')
 
     create: ->
-        t = @game.add.text(
-            @game.width / 2, 0,
-            'Welcome',
-            style = { font: '32px Arial', fill: '#8800ff', align: 'center' }
-        )
-        t.anchor.set(.5, 0)
+        @graphGraphics = @game.add.graphics(0, 0)
+        @graphGraphics.lineStyle(1, 0x880088, 1.0)
         @drawGraph()
+        @graphGraphics.lineStyle(3, 0xffffff, 1.0)
+
+        @snake = new Snake(graph, 0, 1)
+        @snake.nextNode = 4
+        @snake.sprite = @game.add.sprite(20, 20, 'head')
+        @snake.sprite.anchor.set(.5, .5)
 
     drawGraph: ->
-        graphGraphics = @game.add.graphics(0, 0)
-        graphGraphics.lineStyle(3, 0xffffff, 1.0)
-
         for edge in graph.edges
             [node1Index, node2Index] = edge
             node1 = graph.nodes[node1Index]
             node2 = graph.nodes[node2Index]
-            graphGraphics.moveTo(node1.x, node1.y)
-            graphGraphics.lineTo(node2.x, node2.y)
+            @graphGraphics.moveTo(node1.x, node1.y)
+            @graphGraphics.lineTo(node2.x, node2.y)
         return
 
     update: ->
+        pos = @snake.getHeadPosition()
+        @graphGraphics.moveTo pos.x, pos.y
+        @snake.move(1)
+        pos = @snake.getHeadPosition()
+        @snake.sprite.position.set(pos.x, pos.y)
+        @graphGraphics.lineTo pos.x, pos.y
 
     render: ->
 
