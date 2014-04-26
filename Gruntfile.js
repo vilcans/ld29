@@ -366,11 +366,17 @@ module.exports = function (grunt) {
                 'autoprefixer'
             ]);
         }
-
-        grunt.task.run([
-            'connect:test',
-            'mocha'
-        ]);
+        if (target === 'browser') {
+            grunt.task.run([
+                'connect:test',
+                'watch'
+            ])
+        } else {
+            grunt.task.run([
+                'connect:test',
+                'mocha'
+            ]);
+        }
     });
 
     grunt.registerTask('build', [
