@@ -106,13 +106,6 @@ class MainState
         @snake.sprite = @game.add.sprite(20, 20, 'head')
         @snake.sprite.anchor.set(.5, .5)
 
-        @game.input.onDown.add(
-            (pointer, mouseEvent) ->
-                #console.log 'down', arguments
-                @select(pointer.x, pointer.y)
-            this
-        )
-
     select: (x, y) ->
         head = @snake.getHeadNode()
         for neighborIndex, neighbor of head.neighbors
@@ -141,6 +134,8 @@ class MainState
         @snake.move(1)
         pos = @snake.getHeadPosition()
         @snake.sprite.position.set(pos.x, pos.y)
+
+        @select @game.input.worldX, @game.input.worldY
 
         @snakeGraphics.clear()
         @snakeGraphics.lineStyle(3, 0xffffff, .6)
