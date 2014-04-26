@@ -87,6 +87,8 @@ for edge in graph.edges
     node2.neighbors ?= {}
     node2.neighbors[node1Index] = node1
 
+tempPoint = new Phaser.Point
+tempPoint2 = new Phaser.Point
 
 class MainState
     preload: ->
@@ -106,20 +108,46 @@ class MainState
         @snake.sprite = @game.add.sprite(20, 20, 'head')
         @snake.sprite.anchor.set(.5, .5)
 
+        #@game.input.onDown.add(
+        #    (event) ->
+        #        @select(event.worldX, event.worldY)
+        #    this
+        #)
+
     select: (x, y) ->
         head = @snake.getHeadNode()
+        distanceSquared = Math.pow(head.x - x, 2) + Math.pow(head.y - y, 2)
+        #if distanceSquared > 50 * 50 or distanceSquared < 10 * 10
+        #    return
+        directionToPointer = Phaser.Point.subtract({x: x, y: y}, head, tempPoint)
+        directionToPointer.normalize()
+        directionToNode = tempPoint2
+
+        bestNodeIndex = null
+        bestScore = 0
         for neighborIndex, neighbor of head.neighbors
-            if (Math.pow(neighbor.x - x, 2) + Math.pow(neighbor.y - y, 2)) < (Math.pow(20, 2))
-                #console.log 'heading towards', neighborIndex
-                @snake.nextNode = neighborIndex
+            if neighborIndex == @snake.nodes[1]
+                # Can't go back
+                continue
 
-                next = graph.nodes[@snake.nextNode]
-                @selectedEdgeGraphics.clear()
-                @selectedEdgeGraphics.lineStyle(4, 0x8888ff, 1.0)
-                @selectedEdgeGraphics.moveTo(head.x, head.y)
-                @selectedEdgeGraphics.lineTo(next.x, next.y)
+            Phaser.Point.subtract neighbor, head, directionToNode
+            directionToNode.normalize()
+            dotprod = directionToNode.x * directionToPointer.x + directionToNode.y * directionToPointer.y
+            if dotprod > bestScore
+                bestScore = dotprod
+                bestNodeIndex = neighborIndex
 
-                return
+        if bestNodeIndex != null
+            console.log 'best node', bestNodeIndex, 'score', bestScore
+            @snake.nextNode = bestNodeIndex
+
+            next = graph.nodes[@snake.nextNode]
+            @selectedEdgeGraphics.clear()
+            @selectedEdgeGraphics.lineStyle(4, 0x8888ff, 1.0)
+            @selectedEdgeGraphics.moveTo(head.x, head.y)
+            @selectedEdgeGraphics.lineTo(next.x, next.y)
+
+        return
 
     drawGraph: ->
         for edge in graph.edges
