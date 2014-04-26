@@ -6,6 +6,7 @@ My entry for [Ludum Dare](http://www.ludumdare.com/compo/) 29.
 
     bower install
     npm install
+    (cd test && bower install)
     grunt serve
 
 ## Audio
