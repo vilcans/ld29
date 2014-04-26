@@ -85,7 +85,8 @@ class MainState
         @graphGraphics = @game.add.graphics(0, 0)
         @graphGraphics.lineStyle(1, 0x880088, 1.0)
         @drawGraph()
-        @graphGraphics.lineStyle(3, 0xffffff, 1.0)
+
+        @snakeGraphics = @game.add.graphics(0, 0)
 
         @snake = new Snake(graph, 0, 1)
         @snake.nextNode = 4
@@ -118,12 +119,16 @@ class MainState
         return
 
     update: ->
-        pos = @snake.getHeadPosition()
-        @graphGraphics.moveTo pos.x, pos.y
         @snake.move(1)
         pos = @snake.getHeadPosition()
         @snake.sprite.position.set(pos.x, pos.y)
-        @graphGraphics.lineTo pos.x, pos.y
+
+        @snakeGraphics.clear()
+        @snakeGraphics.lineStyle(3, 0xffffff, .6)
+        @snakeGraphics.moveTo pos.x, pos.y
+        for nodeIndex in @snake.nodes[1..]
+            node = graph.nodes[nodeIndex]
+            @snakeGraphics.lineTo(node.x, node.y)
 
     render: ->
 
