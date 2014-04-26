@@ -11,11 +11,15 @@ class Snake
         if @headDistance >= edgeLength
             if @nextNode == null
                 @headDistance = edgeLength
-            else
-                @headDistance -= edgeLength
-                #console.log 'Switching towards node', @nextNode
-                @nodes.unshift(@nextNode)
-                @nextNode = null
+                head = @getHeadNode()
+                candidateNeighbors = (+i for i, n of head.neighbors when +i != @nodes[1])
+                @nextNode = candidateNeighbors[Math.floor(Math.random() * candidateNeighbors.length)]
+                #console.log 'candiates with neighbors ', head.neighbors, 'nodes', @nodes[0..3], ':', candidateNeighbors, 'picking', n
+
+            @headDistance -= edgeLength
+            #console.log 'Switching towards node', @nextNode
+            @nodes.unshift(@nextNode)
+            @nextNode = null
 
     getHeadNode: -> @graph.nodes[@nodes[0]]
     getNeckNode: -> @graph.nodes[@nodes[1]]
