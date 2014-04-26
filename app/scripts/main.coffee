@@ -8,7 +8,15 @@ class Snake
     move: (distance) ->
         @headDistance += distance
         edgeLength = @getEdgeLength(0)
+
         if @headDistance >= edgeLength
+
+            for i in [1...@nodes.length]
+                if @nodes[i] == @nodes[0]
+                    console.log 'Hit myself in nodes', @nodes[..i]
+                    @nodes = [@nodes[0]]
+                    break
+
             if @nextNode == null
                 @headDistance = edgeLength
                 return
@@ -16,7 +24,7 @@ class Snake
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
             @nodes.unshift(@nextNode)
-            if @nodes.length > 5
+            if @nodes.length > 8
                 @nodes.pop()
             @nextNode = null
 
@@ -140,7 +148,7 @@ class MainState
 
             next = graph.nodes[@snake.nextNode]
             @selectedEdgeGraphics.clear()
-            @selectedEdgeGraphics.lineStyle(4, 0x8888ff, 1.0)
+            @selectedEdgeGraphics.lineStyle(8, 0x8888ff, .2)
             @selectedEdgeGraphics.moveTo(head.x, head.y)
             @selectedEdgeGraphics.lineTo(next.x, next.y)
 
@@ -163,7 +171,7 @@ class MainState
         @select @game.input.worldX, @game.input.worldY
 
         @snakeGraphics.clear()
-        @snakeGraphics.lineStyle(3, 0xffffff, .6)
+        @snakeGraphics.lineStyle(3, 0xffffff, 1.0)
         @snakeGraphics.moveTo pos.x, pos.y
         # Drawing a line of length 0 makes the *next* line disappear,
         # hence the check for headDistance
