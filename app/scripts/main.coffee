@@ -22,6 +22,9 @@ class Snake
 
         if @headDistance >= edgeLength
 
+            # Save this as it's an invalid next node
+            neckId = @nodes[1]
+
             i = @nodes.length
             while --i >= 1
                 if @nodes[i] == @nodes[0]
@@ -38,8 +41,13 @@ class Snake
                 @nextNode = null
 
             if @nextNode == null
-                @headDistance = edgeLength
-                return
+                nextCandidates = (+n for n of graph.nodes[@nodes[0]].neighbors when +n != neckId)
+                if nextCandidates.length == 0
+                    console.log 'No possible next node'
+                    @headDistance = edgeLength
+                    return
+                @nextNode = nextCandidates[_.random(nextCandidates.length - 1)]
+                console.log 'Randomly chose', @nextNode
 
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
