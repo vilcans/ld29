@@ -202,6 +202,8 @@ class MainState
         @game.load.audio('music', ['assets/music.ogg'])
 
     create: ->
+        Tracking.trackEvent 'state', 'main'
+
         graph = new Graph(window.graphData.layer1)
 
         @facesRecentlyRemoved = 0
@@ -309,6 +311,7 @@ class MainState
 
         if @facesRecentlyRemoved != 0
             count = @facesRecentlyRemoved
+            Tracking.trackEvent 'game', 'deface', value: count
             @facesRecentlyRemoved = 0
 
             @snake.maxSegments += count
@@ -364,6 +367,7 @@ class MainState
                     )
                 this
             )
+            Tracking.trackEvent 'failure', 'noes'
 
         @select @game.input.worldX, @game.input.worldY
 
@@ -385,6 +389,7 @@ class MainState
     render: ->
 
 start = ->
+    Tracking.trackEvent 'state', 'starting'
     game = new Phaser.Game(320, 480, Phaser.WEBGL, 'game')
     game.state.add('main', MainState)
     game.state.add('intro', IntroState)
