@@ -38,7 +38,7 @@ class @Graph
         edgeId: [face, face?]
     }
     ###
-    constructor: ({@nodes, @edges, @faces}) ->
+    constructor: ({@nodes, edges, @faces}) ->
 
         # Create facesByEdge map
         # Maps edge ID to array of faces that have this edge (1 or 2)
@@ -58,7 +58,7 @@ class @Graph
         console.log 'faces', @faces
 
         # Set neighbors on nodes
-        for edge in @edges
+        for edge in edges
             [node1Index, node2Index] = edge
             node1 = @nodes[node1Index]
             node2 = @nodes[node2Index]
@@ -69,11 +69,9 @@ class @Graph
             node2.neighbors[node1Index] = node1
 
         @edgesByKey = {}
-        for edge in @edges
+        for edge in edges
             edgeKey = getEdgeKey(edge[0], edge[1])
             @edgesByKey[edgeKey] = edge
-
-        @edges = null
 
     captureNodes: (nodes) ->
         points = (new Phaser.Point(@nodes[n].x, @nodes[n].y) for n in nodes)
