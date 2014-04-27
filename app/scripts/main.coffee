@@ -319,7 +319,7 @@ class MainState
 
     moveSnake: ->
         if @snake.canMove()
-            @snake.move(2)
+            @snake.move(1)
         else if @snake.isAlive
             @sounds.music.stop()
             @sounds.death.play()
