@@ -276,15 +276,17 @@ class MainState
 
             next = graph.nodes[@snake.nextNode]
             @selectedEdgeGraphics.clear()
-            @selectedEdgeGraphics.lineStyle(8, 0x8888ff, .2)
-            @selectedEdgeGraphics.moveTo(head.x, head.y)
+            @selectedEdgeGraphics.lineStyle(3, 0x888888, .8)
+            headPos = @snake.getHeadPosition()
+            @selectedEdgeGraphics.moveTo(headPos.x, headPos.y)
+            @selectedEdgeGraphics.lineTo(head.x, head.y)
             @selectedEdgeGraphics.lineTo(next.x, next.y)
 
         return
 
     drawGraph: ->
         @graphGraphics.clear()
-        @graphGraphics.lineStyle(1, 0x880088, 1.0)
+        @graphGraphics.lineStyle(2, 0x444444, .5)
         for edgeId, edge of graph.edgesByKey
             [node1Index, node2Index] = edge
             node1 = graph.nodes[node1Index]
@@ -346,7 +348,7 @@ class MainState
         @snake.sprite.position.set(pos.x, pos.y)
 
         @snakeGraphics.clear()
-        @snakeGraphics.lineStyle(3, 0xffffff, 1.0)
+        @snakeGraphics.lineStyle(3, 0xff2200, .75)
         @snakeGraphics.moveTo pos.x, pos.y
         # Drawing a line of length 0 makes the *next* line disappear,
         # hence the check for headDistance
