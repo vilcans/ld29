@@ -209,11 +209,11 @@ class MainState
         else
             @snake.kill()
 
+        @select @game.input.worldX, @game.input.worldY
+
     drawSnake: ->
         pos = @snake.getHeadPosition()
         @snake.sprite.position.set(pos.x, pos.y)
-
-        @select @game.input.worldX, @game.input.worldY
 
         @snakeGraphics.clear()
         @snakeGraphics.lineStyle(3, 0xffffff, 1.0)
