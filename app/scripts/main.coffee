@@ -194,6 +194,7 @@ class MainState
         @game.load.image('head', 'assets/head.png')
         @game.load.image('layer1', 'assets/layer1.png')
         @game.load.image('background', 'assets/background.jpg')
+        @game.load.image('layer2', 'assets/layer2.png')
 
         @game.load.audio('faceoff', ['assets/faceoff.ogg'])
         @game.load.audio('enlong', ['assets/enlong.ogg'])
@@ -209,6 +210,8 @@ class MainState
 
         @backgroundSprite = @game.add.tileSprite(0, 0, @game.width, @game.height, 'background')
         @backgroundSprite.fixedToCamera = true
+
+        @layer2Sprite = @game.add.sprite(0, 0, 'layer2')
 
         @layer = new Layer(@game, 'layer1')
 
