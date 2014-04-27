@@ -126,14 +126,26 @@ graph = new Graph(
 tempPoint = new Phaser.Point
 tempPoint2 = new Phaser.Point
 
+class Layer
+    constructor: (@game, @name) ->
+        @sprite = @game.add.sprite(0, 0, @name)
+
+        @mask = @game.add.graphics(0, 0)
+        @mask.beginFill(0xffffff, 1.0)
+        @mask.drawRect(0, 0, 608, 906)
+        @mask.endFill()
+        @sprite.mask = @mask
+
+
 class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
         @game.load.image('layer1', 'assets/layer1.png')
 
     create: ->
-        @layerSprite = @game.add.sprite(0, 0, 'layer1')
         @game.world.setBounds(0, 0, 608, 906)
+
+        @layer = new Layer(@game, 'layer1')
 
         @graphGraphics = @game.add.graphics(0, 0)
         @drawGraph()
