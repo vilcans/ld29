@@ -140,6 +140,57 @@ class Layer
         @mask.endFill()
         @sprite.mask = @mask
 
+class IntroState
+    create: ->
+        $('#webgl-warning').hide()
+        Tracking.trackEvent 'state', 'intro'
+
+        game = @game
+        center = (sprite) ->
+            sprite.position.x = game.width / 2
+            sprite.anchor.x = .5
+            return sprite
+
+        center @game.add.text(
+            0, 20,
+            'Skin Deep',
+            { font: '32px Arial', fill: '#ffdec0', align: 'center' }
+        )
+
+        center @game.add.text(
+            0, 56,
+            'by Martin Vilcans\nfor Ludum Dare 29',
+            { font: '12px Arial', fill: '#9a7e45', align: 'center' }
+        )
+
+        t = center @game.add.text(
+            0, 240,
+            [
+                'Beauty may deceive.',
+                'Lose that skin. I want to see your true self.',
+            ].join('\n')
+            { font: '12px Arial', fill: '#cccccc', align: 'center' }
+        )
+        t.anchor.y = .5
+
+        @startButton = center @game.add.text(
+            0, 460,
+            [
+                'Guide the laser cutter by pointing.',
+                'Don\'t get caught in a dead end.',
+                'Touch me when ready for surgery.'
+            ].join('\n')
+            { font: '12px Arial', fill: '#9a7e45', align: 'center' }
+        )
+        @startButton.anchor.y = 1
+        @startButton.inputEnabled = true
+        @startButton.events.onInputDown.add(
+            (object, pointer) ->
+                @game.state.start('main')
+            this
+        )
+
+
 class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
@@ -154,7 +205,6 @@ class MainState
     create: ->
         @facesRecentlyRemoved = 0
 
-        $('#webgl-warning').hide()
         @game.world.setBounds(0, 0, 608, 906)
 
         @backgroundSprite = @game.add.tileSprite(0, 0, @game.width, @game.height, 'background')
@@ -297,6 +347,7 @@ class MainState
 start = ->
     game = new Phaser.Game(320, 480, Phaser.WEBGL, 'game')
     game.state.add('main', MainState)
-    game.state.start('main')
+    game.state.add('intro', IntroState)
+    game.state.start('intro')
 
 start()
