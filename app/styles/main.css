@@ -16,7 +16,9 @@ body {
 #info {
     width: 100%;
     text-align: center;
-    font-size: 8pt;
+}
+#webgl-warning {
+    font-size: 12pt;
 }
 
 .browsehappy {

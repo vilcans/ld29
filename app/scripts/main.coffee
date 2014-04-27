@@ -148,6 +148,7 @@ class MainState
         @game.load.image('background', 'assets/background.jpg')
 
     create: ->
+        $('#webgl-warning').hide()
         @game.world.setBounds(0, 0, 608, 906)
 
         @backgroundSprite = @game.add.tileSprite(0, 0, @game.width, @game.height, 'background')
