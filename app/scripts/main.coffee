@@ -186,8 +186,7 @@ class MainState
             node2 = graph.nodes[node2Index]
             @graphGraphics.moveTo(node1.x, node1.y)
             @graphGraphics.lineTo(node2.x, node2.y)
-        for face in graph.faces
-            continue unless face
+        for faceId, face in graph.facesById
             @graphGraphics.drawCircle(face.x, face.y, 5)
         return
 

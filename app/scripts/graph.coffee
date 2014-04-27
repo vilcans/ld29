@@ -26,7 +26,11 @@ class @Graph
 
     @nodes = same as above
 
-    @faces = same as above
+    @facesById: {
+        faceId: face,
+        .
+        .
+    }
 
     @edgesByKey = {
         edgeKey: edge,
@@ -38,13 +42,18 @@ class @Graph
         edgeId: [face, face?]
     }
     ###
-    constructor: ({@nodes, edges, @faces}) ->
+    constructor: ({@nodes, edges, faces}) ->
+
+        @facesById = {}
+        for face, faceIndex in faces
+            face.id = faceIndex
+            @facesById[faceIndex] = face
+        console.log 'facesById', @facesById
 
         # Create facesByEdge map
         # Maps edge ID to array of faces that have this edge (1 or 2)
         @facesByEdge = {}
-        for face, faceIndex in @faces
-            face.id = faceIndex
+        for faceId, face of @facesById
             face.edgeKeys = []
             for i in [0...face.nodes.length]
                 nodeIndex1 = face.nodes[i]
@@ -55,7 +64,6 @@ class @Graph
                 faceList.push(face)
 
         console.log 'facesByEdge', @facesByEdge
-        console.log 'faces', @faces
 
         # Set neighbors on nodes
         for edge in edges
@@ -88,7 +96,7 @@ class @Graph
                 return
 
             visited[faceId] = true
-            face = @faces[faceId]
+            face = @facesById[faceId]
             if not face
                 throw "no face with id #{faceId}"
             if polygon.contains(face.x, face.y)
@@ -128,9 +136,9 @@ class @Graph
                 throw "Unexpected number of faces on edge #{edgeKey}: #{neighbors.length}"
 
         for neighborId in face.neighbors
-            neighbor = @faces[neighborId]
+            neighbor = @facesById[neighborId]
             neighbor.neighbors = (n for n in neighbor.neighbors when n != face.id)
-        delete @faces[face.id]
+        delete @facesById[face.id]
         return
 
     removeEdge: (edgeKey) ->
