@@ -20,4 +20,4 @@ Phaser.Polygon.prototype.contains = function (x, y) {
 
     return inside;
 
-}
+};
