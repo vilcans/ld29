@@ -149,6 +149,7 @@ class MainState
         @game.load.audio('faceoff', ['assets/faceoff.ogg'])
         @game.load.audio('enlong', ['assets/enlong.ogg'])
         @game.load.audio('death', ['assets/death.ogg'])
+        @game.load.audio('music', ['assets/music.ogg'])
 
     create: ->
         @facesRecentlyRemoved = 0
@@ -185,7 +186,9 @@ class MainState
             faceoff: @game.add.audio('faceoff', 1, false)
             enlong: @game.add.audio('enlong', 1, false)
             death: @game.add.audio('death', 1, false)
+            music: @game.add.audio('music', 1, true)
         }
+        @sounds.music.play()
 
         #@game.input.onDown.add(
         #    (event) ->
@@ -268,6 +271,7 @@ class MainState
         if @snake.canMove()
             @snake.move(2)
         else if @snake.isAlive
+            @sounds.music.stop()
             @sounds.death.play()
             @snake.kill()
 
