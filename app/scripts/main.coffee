@@ -140,12 +140,16 @@ class Layer
         @mask.endFill()
         @sprite.mask = @mask
 
+        @facesRecentlyRemoved = 0
 
 class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
         @game.load.image('layer1', 'assets/layer1.png')
         @game.load.image('background', 'assets/background.jpg')
+
+        @game.load.audio('faceoff', ['assets/faceoff.ogg'])
+        @game.load.audio('enlong', ['assets/enlong.ogg'])
 
     create: ->
         $('#webgl-warning').hide()
@@ -157,7 +161,7 @@ class MainState
         @layer = new Layer(@game, 'layer1')
 
         graph.onRemoveFace = (face) =>
-            @snake.maxSegments += 1
+            @facesRecentlyRemoved++
             @layer.mask.beginFill(0xffffff, 1.0)
             @layer.mask.drawPolygon(face.polygon)
             @layer.mask.endFill()
@@ -175,6 +179,11 @@ class MainState
         @snake.sprite.anchor.set(.5, .5)
 
         @game.camera.follow(@snake.sprite)
+
+        @sounds = {
+            faceoff: @game.add.audio('faceoff', 1, false)
+            enlong: @game.add.audio('enlong', 1, false)
+        }
 
         #@game.input.onDown.add(
         #    (event) ->
@@ -237,6 +246,21 @@ class MainState
         @drawSnake()
         @backgroundSprite.tilePosition.x = Math.round(@game.camera.x * -.5)
         @backgroundSprite.tilePosition.y = Math.round(@game.camera.y * -.5)
+
+        if @facesRecentlyRemoved != 0
+            count = @facesRecentlyRemoved
+            @facesRecentlyRemoved = 0
+
+            @snake.maxSegments += count
+            for i in [0...count]
+                @game.time.events.add(
+                    200 + i * 150,
+                    ->
+                        if @snake.isAlive
+                            @sounds.enlong.play()
+                    this
+                )
+            @sounds.faceoff.play()
 
     moveSnake: ->
         if @snake.canMove()
