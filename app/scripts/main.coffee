@@ -92,7 +92,7 @@ class Snake
             x: neckNode.x + fraction * (headNode.x - neckNode.x),
             y: neckNode.y + fraction * (headNode.y - neckNode.y)
         }
-
+###
 graph = new Graph(
     nodes: [
         {x:  20, y:  20},  # 0   neighbors: {nodeId: node, ...}
@@ -122,6 +122,9 @@ graph = new Graph(
         {x: 300, y: 300, nodes: [4, 5, 8, 7], neighbors: [1, 2]},
     ]
 )
+###
+
+graph = new Graph(window.graphData.layer1)
 
 tempPoint = new Phaser.Point
 tempPoint2 = new Phaser.Point
