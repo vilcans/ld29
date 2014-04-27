@@ -141,9 +141,13 @@ class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
         @game.load.image('layer1', 'assets/layer1.png')
+        @game.load.image('background', 'assets/background.jpg')
 
     create: ->
         @game.world.setBounds(0, 0, 608, 906)
+
+        @backgroundSprite = @game.add.tileSprite(0, 0, @game.width, @game.height, 'background')
+        @backgroundSprite.fixedToCamera = true
 
         @layer = new Layer(@game, 'layer1')
 
@@ -220,6 +224,8 @@ class MainState
         @moveSnake()
         @drawGraph()
         @drawSnake()
+        @backgroundSprite.tilePosition.x = Math.round(@game.camera.x * -.5)
+        @backgroundSprite.tilePosition.y = Math.round(@game.camera.y * -.5)
 
     moveSnake: ->
         if @snake.canMove()
