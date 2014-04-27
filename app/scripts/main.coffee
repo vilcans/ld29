@@ -14,9 +14,10 @@ class Snake
             i = @nodes.length
             while --i >= 1
                 if @nodes[i] == @nodes[0]
-                    console.log 'Hit myself in nodes', @nodes[..i]
+                    closedLoop = @nodes[..i]
+                    console.log 'Hit myself in nodes', closedLoop
                     console.log 'nodes are', @nodes
-                    captureEdges(@getEdges())
+                    captureNodes(closedLoop)
                     @nodes = [@nodes[0]]
                     break
 
@@ -62,17 +63,18 @@ class Snake
             y: neckNode.y + fraction * (headNode.y - neckNode.y)
         }
 
+
 graph = {
     nodes: [
-        {x:   0, y:   0},  # 0
+        {x:  10, y:   0},  # 0
         {x: 100, y:   0},  # 1
         {x: 250, y:   0},  # 2
-        {x:   0, y: 100},  # 3
+        {x:  10, y: 100},  # 3
         {x: 100, y: 100},  # 4
         {x: 250, y: 100},  # 5
-        {x:   0, y: 200},  # 6
+        {x:  10, y: 200},  # 6
         {x: 100, y: 400},  # 7
-        {x: 200, y: 150},  # 8
+        {x: 200, y: 190},  # 8
     ]
     edges: [
         # horizontal
@@ -84,7 +86,36 @@ graph = {
         [1, 4], [4, 7],
         [2, 5], [5, 8],
     ]
+    faces: [
+        {x:  50, y:  50, nodes: [0, 1, 4, 3], neighbors: [1, 2]},  # edgeKeys: [...]
+        {x: 150, y:  50, nodes: [1, 2, 5, 4], neighbors: [0, 3]},
+        {x:  50, y: 200, nodes: [3, 4, 7, 6], neighbors: [0, 3]},
+        {x: 150, y: 150, nodes: [4, 5, 8, 7], neighbors: [1, 2]},
+    ]
+    # Map edge ID to array of faces that have this edge (1 or 2)
+    facesByEdge: {}
 }
+
+getEdgeKey = (nodeIndex1, nodeIndex2) ->
+    if nodeIndex1 < nodeIndex2
+        "#{nodeIndex1}-#{nodeIndex2}"
+    else
+        "#{nodeIndex2}-#{nodeIndex1}"
+
+# Create facesByEdge map
+for face, faceIndex in graph.faces
+    face.id = faceIndex
+    face.edgeKeys = []
+    for i in [0...face.nodes.length]
+        nodeIndex1 = face.nodes[i]
+        nodeIndex2 = face.nodes[(i + 1) % face.nodes.length]
+        key = getEdgeKey(nodeIndex1, nodeIndex2)
+        face.edgeKeys.push(key)
+        faceList = (graph.facesByEdge[key] ?= [])
+        faceList.push(face)
+
+console.log 'facesByEdge', graph.facesByEdge
+console.log 'faces', graph.faces
 
 for edge in graph.edges
     [node1Index, node2Index] = edge
@@ -95,6 +126,61 @@ for edge in graph.edges
     node1.neighbors[node2Index] = node2
     node2.neighbors ?= {}
     node2.neighbors[node1Index] = node1
+
+
+captureNodes = (nodes) ->
+    points = (new Phaser.Point(graph.nodes[n].x, graph.nodes[n].y) for n in nodes)
+    #points.push(points[0])
+    polygon = new Phaser.Polygon(points)
+
+
+    graphics = window.game.state.getCurrentState().graphGraphics
+    graphics.clear()
+
+    graphics.lineStyle(5, 0x00ff00, 1.0)
+    graphics.drawPolygon(polygon)
+
+    console.log 'polygon:', polygon
+
+    graphics.lineStyle(1, 0x8800ff, 1.0)
+
+    y = 0
+    while y < 480
+        x = 0
+        while x < 320
+            if polygon.contains(x, y)
+                graphics.drawCircle(x, y, 2)
+            x += 15
+        y += 15
+
+    # Faces to remove
+    toRemove = []
+
+    visited = {}
+
+    maybeDelete = (faceId) ->
+        if visited[faceId]
+            return
+
+        visited[faceId] = true
+        face = graph.faces[faceId]
+        if not face
+            throw "no face with id #{faceId}"
+        if polygon.contains(face.x, face.y)
+            console.log 'delete face', faceId, ', poly contains', face.x, face.y
+            visited[faceId] = true
+            for neighborId in face.neighbors
+                maybeDelete(neighborId)
+        else
+            console.log faceId, 'is not inside'
+        return
+
+    firstFaces = graph.facesByEdge[getEdgeKey(nodes[0], nodes[1])]
+    maybeDelete(firstFaces[0].id)
+    if firstFaces.length > 1
+        maybeDelete(firstFaces[1].id)
+
+    return
 
 tempPoint = new Phaser.Point
 tempPoint2 = new Phaser.Point
@@ -166,10 +252,12 @@ class MainState
             node2 = graph.nodes[node2Index]
             @graphGraphics.moveTo(node1.x, node1.y)
             @graphGraphics.lineTo(node2.x, node2.y)
+        for face in graph.faces
+            @graphGraphics.drawCircle(face.x, face.y, 5)
         return
 
     update: ->
-        @snake.move(1)
+        @snake.move(2)
         pos = @snake.getHeadPosition()
         @snake.sprite.position.set(pos.x, pos.y)
 
@@ -188,6 +276,7 @@ class MainState
 
 start = ->
     game = new Phaser.Game(320, 480, Phaser.AUTO, 'game')
+    window.game = game
     game.state.add('main', MainState)
     game.state.start('main')
 
