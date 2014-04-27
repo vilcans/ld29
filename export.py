@@ -3,7 +3,7 @@ from pprint import pprint
 import bpy
 
 def export(mesh_name, file_name):
-    data = bpy.data.meshes['Grid.001']
+    data = bpy.data.meshes[mesh_name]
     data.update(calc_tessface=True)
 
     nodes = []
@@ -24,6 +24,10 @@ def export(mesh_name, file_name):
         else:
             return (node2, node1)
 
+    all_faces = data.polygons
+    #all_faces = data.tessfaces
+    print('%d faces, %d vertices' % (len(all_faces), len(data.vertices)))
+
     for v in data.vertices:
         nodes.append({
             'x': screen_x(v.co.x),
@@ -32,8 +36,7 @@ def export(mesh_name, file_name):
 
     edge_to_faces = {}
 
-    for face_number, face in enumerate(data.tessfaces):
-        print('face number', face_number)
+    for face_number, face in enumerate(all_faces):
         face_data = {
             'id': face_number,
             'x': screen_x(average([data.vertices[n].co.x for n in face.vertices])),
@@ -65,7 +68,7 @@ def export(mesh_name, file_name):
         'faces': faces,
         'edges': list(list(x) for x in edge_to_faces.keys()),
     }
-    pprint(result)
+    #pprint(result)
 
     with open(file_name, 'w') as out:
         out.write('window.graphData = window.graphData || {};\n')
