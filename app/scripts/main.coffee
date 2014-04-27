@@ -140,8 +140,6 @@ class Layer
         @mask.endFill()
         @sprite.mask = @mask
 
-        @facesRecentlyRemoved = 0
-
 class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
@@ -152,6 +150,8 @@ class MainState
         @game.load.audio('enlong', ['assets/enlong.ogg'])
 
     create: ->
+        @facesRecentlyRemoved = 0
+
         $('#webgl-warning').hide()
         @game.world.setBounds(0, 0, 608, 906)
 
