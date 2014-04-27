@@ -133,26 +133,6 @@ captureNodes = (nodes) ->
     #points.push(points[0])
     polygon = new Phaser.Polygon(points)
 
-
-    graphics = window.game.state.getCurrentState().graphGraphics
-    graphics.clear()
-
-    graphics.lineStyle(5, 0x00ff00, 1.0)
-    graphics.drawPolygon(polygon)
-
-    console.log 'polygon:', polygon
-
-    graphics.lineStyle(1, 0x8800ff, 1.0)
-
-    y = 0
-    while y < 480
-        x = 0
-        while x < 320
-            if polygon.contains(x, y)
-                graphics.drawCircle(x, y, 2)
-            x += 15
-        y += 15
-
     # Faces to remove
     toRemove = []
 
@@ -276,7 +256,6 @@ class MainState
 
 start = ->
     game = new Phaser.Game(320, 480, Phaser.AUTO, 'game')
-    window.game = game
     game.state.add('main', MainState)
     game.state.start('main')
 
