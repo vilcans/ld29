@@ -24,7 +24,7 @@ class Snake
                     closedLoop = @nodes[..i]
                     console.log 'Hit myself in nodes', closedLoop
                     console.log 'nodes are', @nodes
-                    captureNodes(closedLoop)
+                    @graph.captureNodes(closedLoop)
                     @nodes = [@nodes[0]]
                     break
 
@@ -146,8 +146,8 @@ for edge in graph.edges
     node2.neighbors[node1Index] = node1
 
 
-captureNodes = (nodes) ->
-    points = (new Phaser.Point(graph.nodes[n].x, graph.nodes[n].y) for n in nodes)
+graph.captureNodes = (nodes) ->
+    points = (new Phaser.Point(@nodes[n].x, @nodes[n].y) for n in nodes)
     #points.push(points[0])
     polygon = new Phaser.Polygon(points)
 
@@ -156,12 +156,12 @@ captureNodes = (nodes) ->
 
     visited = {}
 
-    maybeDelete = (faceId) ->
+    maybeDelete = (faceId) =>
         if visited[faceId]
             return
 
         visited[faceId] = true
-        face = graph.faces[faceId]
+        face = @faces[faceId]
         if not face
             throw "no face with id #{faceId}"
         if polygon.contains(face.x, face.y)
@@ -174,38 +174,43 @@ captureNodes = (nodes) ->
             console.log faceId, 'is not inside'
         return
 
-    firstFaces = graph.facesByEdge[getEdgeKey(nodes[0], nodes[1])]
+    firstFaces = @facesByEdge[getEdgeKey(nodes[0], nodes[1])]
     maybeDelete(firstFaces[0].id)
     if firstFaces.length > 1
         maybeDelete(firstFaces[1].id)
 
     console.log 'Removing faces...'
     for face in toRemove
-        console.log 'Removing face', face.id
-        for edgeKey in face.edgeKeys
-            neighbors = graph.facesByEdge[edgeKey]
-            if neighbors.length == 1
-                # This face was the only one using this edge
-                console.log '...removing edge', edgeKey
-                graph.facesByEdge[edgeKey] = []
-                nodeIds = edgeKey.split('-')
+        @removeFace(face)
 
-                # Remove neighbor connections
-                nodeId0 = +nodeIds[0]
-                nodeId1 = +nodeIds[1]
-                console.log '......old neighbors from', nodeId0, graph.nodes[nodeId0].neighbors
-                console.log '......old neighbors from', nodeId1, graph.nodes[nodeId1].neighbors
-                delete graph.nodes[nodeId0].neighbors[nodeId1]
-                delete graph.nodes[nodeId1].neighbors[nodeId0]
-                console.log '......new neighbors from', nodeId0, graph.nodes[nodeId0].neighbors
-                console.log '......new neighbors from', nodeId1, graph.nodes[nodeId1].neighbors
+    return
 
-            else if neighbors.length == 2
-                neighbor = neighbors[if neighbors[0] == face then 1 else 0]
-                console.log '...removing from edge', edgeKey, 'only', neighbor.id, 'left'
-                graph.facesByEdge[edgeKey] = [neighbor]
-            else
-                throw "Unexpected number of faces on edge #{edgeKey}: #{neighbors.length}"
+graph.removeFace = (face) ->
+    console.log 'Removing face', face.id
+    for edgeKey in face.edgeKeys
+        neighbors = @facesByEdge[edgeKey]
+        if neighbors.length == 1
+            # This face was the only one using this edge
+            console.log '...removing edge', edgeKey
+            @facesByEdge[edgeKey] = []
+            nodeIds = edgeKey.split('-')
+
+            # Remove neighbor connections
+            nodeId0 = +nodeIds[0]
+            nodeId1 = +nodeIds[1]
+            console.log '......old neighbors from', nodeId0, @nodes[nodeId0].neighbors
+            console.log '......old neighbors from', nodeId1, @nodes[nodeId1].neighbors
+            delete @nodes[nodeId0].neighbors[nodeId1]
+            delete @nodes[nodeId1].neighbors[nodeId0]
+            console.log '......new neighbors from', nodeId0, @nodes[nodeId0].neighbors
+            console.log '......new neighbors from', nodeId1, @nodes[nodeId1].neighbors
+
+        else if neighbors.length == 2
+            neighbor = neighbors[if neighbors[0] == face then 1 else 0]
+            console.log '...removing from edge', edgeKey, 'only', neighbor.id, 'left'
+            @facesByEdge[edgeKey] = [neighbor]
+        else
+            throw "Unexpected number of faces on edge #{edgeKey}: #{neighbors.length}"
     return
 
 tempPoint = new Phaser.Point
