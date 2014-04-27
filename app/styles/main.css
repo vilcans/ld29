@@ -4,7 +4,7 @@ body {
     color: #333;
 }
 
-#game {
+#game canvas {
 	cursor: crosshair;
 }
 
