@@ -99,19 +99,7 @@ class @Graph
             if neighbors.length == 1
                 # This face was the only one using this edge
                 console.log '...removing edge', edgeKey
-                @facesByEdge[edgeKey] = []
-                nodeIds = edgeKey.split('-')
-
-                # Remove neighbor connections
-                nodeId0 = +nodeIds[0]
-                nodeId1 = +nodeIds[1]
-                console.log '......old neighbors from', nodeId0, @nodes[nodeId0].neighbors
-                console.log '......old neighbors from', nodeId1, @nodes[nodeId1].neighbors
-                delete @nodes[nodeId0].neighbors[nodeId1]
-                delete @nodes[nodeId1].neighbors[nodeId0]
-                console.log '......new neighbors from', nodeId0, @nodes[nodeId0].neighbors
-                console.log '......new neighbors from', nodeId1, @nodes[nodeId1].neighbors
-
+                @removeEdge(edgeKey)
             else if neighbors.length == 2
                 neighbor = neighbors[if neighbors[0] == face then 1 else 0]
                 console.log '...removing from edge', edgeKey, 'only', neighbor.id, 'left'
@@ -119,3 +107,18 @@ class @Graph
             else
                 throw "Unexpected number of faces on edge #{edgeKey}: #{neighbors.length}"
         return
+
+    removeEdge: (edgeKey) ->
+        @facesByEdge[edgeKey] = []
+        nodeIds = edgeKey.split('-')
+
+        # Remove neighbor connections
+        nodeId0 = +nodeIds[0]
+        nodeId1 = +nodeIds[1]
+        console.log '......old neighbors from', nodeId0, @nodes[nodeId0].neighbors
+        console.log '......old neighbors from', nodeId1, @nodes[nodeId1].neighbors
+        delete @nodes[nodeId0].neighbors[nodeId1]
+        delete @nodes[nodeId1].neighbors[nodeId0]
+        console.log '......new neighbors from', nodeId0, @nodes[nodeId0].neighbors
+        console.log '......new neighbors from', nodeId1, @nodes[nodeId1].neighbors
+
