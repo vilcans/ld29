@@ -13,6 +13,11 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+#info {
+    width: 100%;
+    text-align: center;
+    font-size: 8pt;
+}
 
 .browsehappy {
     margin: 0.2em 0;
