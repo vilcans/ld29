@@ -151,6 +151,11 @@ class MainState
 
         @layer = new Layer(@game, 'layer1')
 
+        graph.onRemoveFace = (face) =>
+            @layer.mask.beginFill(0xffffff, 1.0)
+            @layer.mask.drawPolygon(face.polygon)
+            @layer.mask.endFill()
+
         @graphGraphics = @game.add.graphics(0, 0)
         @drawGraph()
 

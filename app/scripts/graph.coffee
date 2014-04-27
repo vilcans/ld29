@@ -42,7 +42,7 @@ class @Graph
         edgeId: [face, face?]
     }
     ###
-    constructor: ({@nodes, edges, faces}) ->
+    constructor: ({@nodes, edges, faces, @onRemoveFace}) ->
 
         @facesById = {}
         for face, faceIndex in faces
@@ -62,6 +62,12 @@ class @Graph
                 face.edgeKeys.push(key)
                 faceList = (@facesByEdge[key] ?= [])
                 faceList.push(face)
+
+        # Create Phaser polygons for faces
+        for faceId, face of @facesById
+            face.polygon = new Phaser.Polygon(
+                new Phaser.Point(@nodes[nid].x, @nodes[nid].y) for nid in face.nodes
+            )
 
         console.log 'facesByEdge', @facesByEdge
 
@@ -121,6 +127,8 @@ class @Graph
         return
 
     removeFace: (face) ->
+        @onRemoveFace?(face)
+
         console.log 'Removing face', face.id
         for edgeKey in face.edgeKeys
             neighbors = @facesByEdge[edgeKey]
