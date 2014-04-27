@@ -140,16 +140,15 @@ class Layer
         @mask.endFill()
         @sprite.mask = @mask
 
+center = (sprite) ->
+    sprite.position.x = 320 / 2
+    sprite.anchor.x = .5
+    return sprite
+
 class IntroState
     create: ->
         $('#webgl-warning').hide()
         Tracking.trackEvent 'state', 'intro'
-
-        game = @game
-        center = (sprite) ->
-            sprite.position.x = game.width / 2
-            sprite.anchor.x = .5
-            return sprite
 
         center @game.add.text(
             0, 20,
@@ -173,20 +172,19 @@ class IntroState
         )
         t.anchor.y = .5
 
-        @startButton = center @game.add.text(
+        t = center @game.add.text(
             0, 460,
             [
                 'Guide the laser cutter by pointing.',
                 'Don\'t get caught in a dead end.',
                 'Touch me when ready for surgery.'
             ].join('\n')
-            { font: '12px Arial', fill: '#9a7e45', align: 'center' }
+            { font: '16px Arial', fill: '#9a7e45', align: 'center' }
         )
-        @startButton.anchor.y = 1
-        @startButton.inputEnabled = true
-        @startButton.events.onInputDown.add(
-            (object, pointer) ->
-                @game.state.start('main')
+        t.anchor.y = 1
+
+        @game.input.onDown.add(
+            -> @game.state.start('main')
             this
         )
 
@@ -203,6 +201,8 @@ class MainState
         @game.load.audio('music', ['assets/music.ogg'])
 
     create: ->
+        graph = new Graph(window.graphData.layer1)
+
         @facesRecentlyRemoved = 0
 
         @game.world.setBounds(0, 0, 608, 906)
@@ -324,6 +324,20 @@ class MainState
             @sounds.music.stop()
             @sounds.death.play()
             @snake.kill()
+            @game.time.events.add(
+                500,
+                ->
+                    center(@game.add.text(
+                        0, 460,
+                        'A soul is hard to find.\nTry again.'
+                        { font: '16px Arial', fill: '#ffffff', align: 'center' }
+                    ))
+                    @game.input.onDown.add(
+                        -> @game.state.start('intro')
+                        this
+                    )
+                this
+            )
 
         @select @game.input.worldX, @game.input.worldY
 
