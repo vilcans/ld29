@@ -5,7 +5,14 @@ class Snake
         @tailDistance = 0
         @nextNode = null
 
+    canMove: ->
+        @nodes.length >= 2
+
     move: (distance) ->
+        if not @canMove()
+            console.log 'cannot move'
+            return false
+
         @headDistance += distance
         edgeLength = @getEdgeLength(0)
 
@@ -21,6 +28,11 @@ class Snake
                     @nodes = [@nodes[0]]
                     break
 
+            if @nextNode? and not graph.nodes[@nextNode].neighbors[@nodes[0]]
+                # No edge between these nodes
+                console.log 'nextNode not valid any more'
+                @nextNode = null
+
             if @nextNode == null
                 @headDistance = edgeLength
                 return
@@ -32,6 +44,7 @@ class Snake
             #    @nodes.pop()
             @nextNode = null
 
+        return true
 
     # Get the node that this snake is moving towards
     getHeadNode: -> @graph.nodes[@nodes[0]]
@@ -57,6 +70,11 @@ class Snake
     getHeadPosition: ->
         headNode = @getHeadNode()
         neckNode = @getNeckNode()
+        unless neckNode
+            return {
+                x: headNode.x
+                y: headNode.y
+            }
         fraction = @headDistance / @getEdgeLength(0)
         return {
             x: neckNode.x + fraction * (headNode.x - neckNode.x),
@@ -66,7 +84,7 @@ class Snake
 
 graph = {
     nodes: [
-        {x:  10, y:   0},  # 0
+        {x:  10, y:   0},  # 0   neighbors: {nodeId: node, ...}
         {x: 100, y:   0},  # 1
         {x: 250, y:   0},  # 2
         {x:  10, y: 100},  # 3
@@ -147,8 +165,9 @@ captureNodes = (nodes) ->
         if not face
             throw "no face with id #{faceId}"
         if polygon.contains(face.x, face.y)
-            console.log 'delete face', faceId, ', poly contains', face.x, face.y
+            #console.log 'delete face', faceId, ', poly contains', face.x, face.y
             visited[faceId] = true
+            toRemove.push(face)
             for neighborId in face.neighbors
                 maybeDelete(neighborId)
         else
@@ -160,6 +179,33 @@ captureNodes = (nodes) ->
     if firstFaces.length > 1
         maybeDelete(firstFaces[1].id)
 
+    console.log 'Removing faces...'
+    for face in toRemove
+        console.log 'Removing face', face.id
+        for edgeKey in face.edgeKeys
+            neighbors = graph.facesByEdge[edgeKey]
+            if neighbors.length == 1
+                # This face was the only one using this edge
+                console.log '...removing edge', edgeKey
+                graph.facesByEdge[edgeKey] = []
+                nodeIds = edgeKey.split('-')
+
+                # Remove neighbor connections
+                nodeId0 = +nodeIds[0]
+                nodeId1 = +nodeIds[1]
+                console.log '......old neighbors from', nodeId0, graph.nodes[nodeId0].neighbors
+                console.log '......old neighbors from', nodeId1, graph.nodes[nodeId1].neighbors
+                delete graph.nodes[nodeId0].neighbors[nodeId1]
+                delete graph.nodes[nodeId1].neighbors[nodeId0]
+                console.log '......new neighbors from', nodeId0, graph.nodes[nodeId0].neighbors
+                console.log '......new neighbors from', nodeId1, graph.nodes[nodeId1].neighbors
+
+            else if neighbors.length == 2
+                neighbor = neighbors[if neighbors[0] == face then 1 else 0]
+                console.log '...removing from edge', edgeKey, 'only', neighbor.id, 'left'
+                graph.facesByEdge[edgeKey] = [neighbor]
+            else
+                throw "Unexpected number of faces on edge #{edgeKey}: #{neighbors.length}"
     return
 
 tempPoint = new Phaser.Point
@@ -237,7 +283,14 @@ class MainState
         return
 
     update: ->
-        @snake.move(2)
+        if @snake
+            @moveSnake()
+
+    moveSnake: ->
+        canMove = @snake.move(2)
+        unless canMove
+            @killSnake()
+            return
         pos = @snake.getHeadPosition()
         @snake.sprite.position.set(pos.x, pos.y)
 
@@ -251,6 +304,11 @@ class MainState
         for i in [(if @snake.headDistance > 0 then 1 else 2)...@snake.nodes.length]
             node = graph.nodes[@snake.nodes[i]]
             @snakeGraphics.lineTo(node.x, node.y)
+
+        return
+
+    killSnake: ->
+        @snake = null
 
     render: ->
 
