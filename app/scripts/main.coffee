@@ -5,6 +5,7 @@ class Snake
         @tailDistance = 0
         @nextNode = null
         @isAlive = true
+        @maxSegments = 3
 
     canMove: ->
         @isAlive and @nodes.length >= 2
@@ -52,8 +53,8 @@ class Snake
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
             @nodes.unshift(@nextNode)
-            #if @nodes.length > 8
-            #    @nodes.pop()
+            if @nodes.length > @maxSegments + 1
+                @nodes.pop()
             @nextNode = null
 
         return true
@@ -155,6 +156,7 @@ class MainState
         @layer = new Layer(@game, 'layer1')
 
         graph.onRemoveFace = (face) =>
+            @snake.maxSegments += 1
             @layer.mask.beginFill(0xffffff, 1.0)
             @layer.mask.drawPolygon(face.polygon)
             @layer.mask.endFill()
