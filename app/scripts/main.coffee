@@ -322,6 +322,27 @@ class MainState
                 )
             @sounds.faceoff.play()
 
+            if _.isEmpty(graph.facesById)
+                @success()
+
+    success: ->
+        Tracking.trackEvent 'success', 'wee'
+        @game.time.events.add(
+            500,
+            ->
+                center(@game.add.text(
+                    0, 460,
+                    'There is no soul. Don\'t try again.',
+                    { font: '16px Arial', fill: '#ffffff', align: 'center' }
+                ))
+                @game.input.onDown.add(
+                    -> @game.state.start('intro')
+                    this
+                )
+            this
+        )
+
+
     moveSnake: ->
         if @snake.canMove()
             @snake.move(1)
