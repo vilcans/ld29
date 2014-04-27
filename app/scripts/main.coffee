@@ -95,15 +95,15 @@ class Snake
 
 graph = new Graph(
     nodes: [
-        {x:  10, y:  10},  # 0   neighbors: {nodeId: node, ...}
-        {x: 100, y:  10},  # 1
-        {x: 250, y:  10},  # 2
-        {x:  10, y: 100},  # 3
-        {x: 100, y: 100},  # 4
-        {x: 250, y: 100},  # 5
-        {x:  10, y: 200},  # 6
-        {x: 100, y: 400},  # 7
-        {x: 200, y: 190},  # 8
+        {x:  20, y:  20},  # 0   neighbors: {nodeId: node, ...}
+        {x: 200, y:  20},  # 1
+        {x: 500, y:  20},  # 2
+        {x:  20, y: 200},  # 3
+        {x: 200, y: 200},  # 4
+        {x: 500, y: 200},  # 5
+        {x:  20, y: 400},  # 6
+        {x: 200, y: 800},  # 7
+        {x: 400, y: 380},  # 8
     ]
     edges: [
         # horizontal
@@ -116,10 +116,10 @@ graph = new Graph(
         [2, 5], [5, 8],
     ]
     faces: [
-        {x:  50, y:  50, nodes: [0, 1, 4, 3], neighbors: [1, 2]},  # edgeKeys: [...]
-        {x: 150, y:  50, nodes: [1, 2, 5, 4], neighbors: [0, 3]},
-        {x:  50, y: 200, nodes: [3, 4, 7, 6], neighbors: [0, 3]},
-        {x: 150, y: 150, nodes: [4, 5, 8, 7], neighbors: [1, 2]},
+        {x: 100, y: 100, nodes: [0, 1, 4, 3], neighbors: [1, 2]},  # edgeKeys: [...]
+        {x: 300, y: 100, nodes: [1, 2, 5, 4], neighbors: [0, 3]},
+        {x: 100, y: 400, nodes: [3, 4, 7, 6], neighbors: [0, 3]},
+        {x: 300, y: 300, nodes: [4, 5, 8, 7], neighbors: [1, 2]},
     ]
 )
 
@@ -129,8 +129,12 @@ tempPoint2 = new Phaser.Point
 class MainState
     preload: ->
         @game.load.image('head', 'assets/head.png')
+        @game.load.image('layer1', 'assets/layer1.png')
 
     create: ->
+        @layerSprite = @game.add.sprite(0, 0, 'layer1')
+        @game.world.setBounds(0, 0, 608, 906)
+
         @graphGraphics = @game.add.graphics(0, 0)
         @drawGraph()
 
@@ -142,6 +146,8 @@ class MainState
         @snake.nextNode = 4
         @snake.sprite = @game.add.sprite(20, 20, 'head')
         @snake.sprite.anchor.set(.5, .5)
+
+        @game.camera.follow(@snake.sprite)
 
         #@game.input.onDown.add(
         #    (event) ->
