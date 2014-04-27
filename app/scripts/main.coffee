@@ -4,9 +4,13 @@ class Snake
         @headDistance = 0
         @tailDistance = 0
         @nextNode = null
+        @isAlive = true
 
     canMove: ->
-        @nodes.length >= 2
+        @isAlive and @nodes.length >= 2
+
+    kill: ->
+        @isAlive = false
 
     move: (distance) ->
         if not @canMove()
@@ -83,9 +87,9 @@ class Snake
 
 graph = new Graph(
     nodes: [
-        {x:  10, y:   0},  # 0   neighbors: {nodeId: node, ...}
-        {x: 100, y:   0},  # 1
-        {x: 250, y:   0},  # 2
+        {x:  10, y:  10},  # 0   neighbors: {nodeId: node, ...}
+        {x: 100, y:  10},  # 1
+        {x: 250, y:  10},  # 2
         {x:  10, y: 100},  # 3
         {x: 100, y: 100},  # 4
         {x: 250, y: 100},  # 5
@@ -120,7 +124,6 @@ class MainState
 
     create: ->
         @graphGraphics = @game.add.graphics(0, 0)
-        @graphGraphics.lineStyle(1, 0x880088, 1.0)
         @drawGraph()
 
         @selectedEdgeGraphics = @game.add.graphics(0, 0)
@@ -175,25 +178,31 @@ class MainState
         return
 
     drawGraph: ->
-        for edge in graph.edges
+        @graphGraphics.clear()
+        @graphGraphics.lineStyle(1, 0x880088, 1.0)
+        for edgeId, edge of graph.edgesByKey
             [node1Index, node2Index] = edge
             node1 = graph.nodes[node1Index]
             node2 = graph.nodes[node2Index]
             @graphGraphics.moveTo(node1.x, node1.y)
             @graphGraphics.lineTo(node2.x, node2.y)
         for face in graph.faces
+            continue unless face
             @graphGraphics.drawCircle(face.x, face.y, 5)
         return
 
     update: ->
-        if @snake
-            @moveSnake()
+        @moveSnake()
+        @drawGraph()
+        @drawSnake()
 
     moveSnake: ->
-        canMove = @snake.move(2)
-        unless canMove
-            @killSnake()
-            return
+        if @snake.canMove()
+            @snake.move(2)
+        else
+            @snake.kill()
+
+    drawSnake: ->
         pos = @snake.getHeadPosition()
         @snake.sprite.position.set(pos.x, pos.y)
 
@@ -209,9 +218,6 @@ class MainState
             @snakeGraphics.lineTo(node.x, node.y)
 
         return
-
-    killSnake: ->
-        @snake = null
 
     render: ->
 

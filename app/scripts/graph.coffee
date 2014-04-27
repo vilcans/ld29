@@ -6,20 +6,35 @@ getEdgeKey = (nodeIndex1, nodeIndex2) ->
 
 class @Graph
     ###
-    nodes: [
+    Arguments:
+
+    nodes = [
         {x: ..., y: ..., neighbors: {nodeId: node, ...}},
         .
         .
     ]
-    edges: [
-        [nodeId1, nodeId2], ...
-    ]
-    faces: [
+    faces = [
         {x: ..., y: ..., nodes: [nodeId, ...], neighbors: [faceId, ...], edgeKeys: [...]},
         .
         .
     ]
-    facesByEdge: {
+    edges = [
+        [nodeId1, nodeId2], ...
+    ]
+
+    Members:
+
+    @nodes = same as above
+
+    @faces = same as above
+
+    @edgesByKey = {
+        edgeKey: edge,
+        .
+        .
+    }
+
+    @facesByEdge: {
         edgeId: [face, face?]
     }
     ###
@@ -52,6 +67,13 @@ class @Graph
             node1.neighbors[node2Index] = node2
             node2.neighbors ?= {}
             node2.neighbors[node1Index] = node1
+
+        @edgesByKey = {}
+        for edge in @edges
+            edgeKey = getEdgeKey(edge[0], edge[1])
+            @edgesByKey[edgeKey] = edge
+
+        @edges = null
 
     captureNodes: (nodes) ->
         points = (new Phaser.Point(@nodes[n].x, @nodes[n].y) for n in nodes)
@@ -106,10 +128,16 @@ class @Graph
                 @facesByEdge[edgeKey] = [neighbor]
             else
                 throw "Unexpected number of faces on edge #{edgeKey}: #{neighbors.length}"
+
+        for neighborId in face.neighbors
+            neighbor = @faces[neighborId]
+            neighbor.neighbors = (n for n in neighbor.neighbors when n != face.id)
+        delete @faces[face.id]
         return
 
     removeEdge: (edgeKey) ->
-        @facesByEdge[edgeKey] = []
+        delete @facesByEdge[edgeKey]
+        delete @edgesByKey[edgeKey]
         nodeIds = edgeKey.split('-')
 
         # Remove neighbor connections
