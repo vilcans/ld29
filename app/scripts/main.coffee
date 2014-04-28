@@ -143,6 +143,7 @@ class Layer
 center = (sprite) ->
     sprite.position.x = 320 / 2
     sprite.anchor.x = .5
+    sprite.fixedToCamera = true
     return sprite
 
 class IntroState
@@ -333,11 +334,12 @@ class MainState
         @game.time.events.add(
             500,
             ->
-                center(@game.add.text(
+                t = center(@game.add.text(
                     0, 460,
                     'There is no soul. Don\'t try again.',
                     { font: '16px Arial', fill: '#ffffff', align: 'center' }
                 ))
+                t.anchor.y = 1
                 @game.input.onDown.add(
                     -> @game.state.start('intro')
                     this
@@ -356,11 +358,12 @@ class MainState
             @game.time.events.add(
                 500,
                 ->
-                    center(@game.add.text(
+                    t = center(@game.add.text(
                         0, 460,
                         'A soul is hard to find.\nTry again.'
                         { font: '16px Arial', fill: '#ffffff', align: 'center' }
                     ))
+                    t.anchor.y = 1
                     @game.input.onDown.add(
                         -> @game.state.start('intro')
                         this
