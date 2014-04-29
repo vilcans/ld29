@@ -1,3 +1,9 @@
+config =
+    screenWidth: 320
+    screenHeight: 480
+    worldWidth: 608
+    worldHeight: 906
+
 class Snake
     constructor: (@graph, startNode, nextNode) ->
         @nodes = [nextNode, startNode]
@@ -142,7 +148,7 @@ class Layer
         @sprite = @game.add.sprite(0, 0, @bitmap)
 
 center = (sprite) ->
-    sprite.position.x = 320 / 2
+    sprite.position.x = config.screenWidth / 2
     sprite.anchor.x = .5
     sprite.fixedToCamera = true
     return sprite
@@ -212,7 +218,7 @@ class MainState
 
         @facesRecentlyRemoved = 0
 
-        @game.world.setBounds(0, 0, 608, 906)
+        @game.world.setBounds(0, 0, config.worldWidth, config.worldHeight)
 
         @backgroundSprite = @game.add.tileSprite(0, 0, @game.width, @game.height, 'background')
         @backgroundSprite.fixedToCamera = true
@@ -434,7 +440,7 @@ class MainState
 
 start = ->
     Tracking.trackEvent 'state', 'starting'
-    game = new Phaser.Game(320, 480, Phaser.AUTO, 'game')
+    game = new Phaser.Game(config.screenWidth, config.screenHeight, Phaser.AUTO, 'game')
     game.state.add('main', MainState)
     game.state.add('intro', IntroState)
     game.state.start('intro')
