@@ -6,6 +6,7 @@ class Snake
         @nextNode = null
         @isAlive = true
         @maxSegments = 3
+        @onNodeTraversed = (previousNode, acrossNode, nextNode) ->
 
     canMove: ->
         @isAlive and @nodes.length >= 2
@@ -23,7 +24,7 @@ class Snake
 
         if @headDistance >= edgeLength
 
-            # Save this as it's an invalid next node
+            headId = @nodes[0]
             neckId = @nodes[1]
 
             i = @nodes.length
@@ -45,10 +46,14 @@ class Snake
                 nextCandidates = (+n for n of graph.nodes[@nodes[0]].neighbors when +n != neckId)
                 if nextCandidates.length == 0
                     console.log 'No possible next node'
-                    @headDistance = edgeLength
-                    return
-                @nextNode = nextCandidates[_.random(nextCandidates.length - 1)]
-                console.log 'Randomly chose', @nextNode
+                else
+                    @nextNode = nextCandidates[_.random(nextCandidates.length - 1)]
+                    console.log 'Randomly chose', @nextNode
+
+            @onNodeTraversed(headId, neckId, @nextNode)
+            if @nextNode == null
+                @headDistance = edgeLength
+                return
 
             @headDistance -= edgeLength
             #console.log 'Switching towards node', @nextNode
@@ -205,6 +210,8 @@ class MainState
     create: ->
         Tracking.trackEvent 'state', 'main'
 
+        @traversedNodes = []
+
         graph = new Graph(window.graphData.layer1)
 
         @facesRecentlyRemoved = 0
@@ -233,6 +240,10 @@ class MainState
 
         @snake = new Snake(graph, 0, 1)
         @snake.nextNode = 4
+        @snake.onNodeTraversed = (previousNode, acrossNode, nextNode) =>
+            #console.log 'Move:', previousNode, '-', acrossNode, 'towards', nextNode
+            @traversedNodes.push(acrossNode)
+
         @snake.sprite = @game.add.sprite(20, 20, 'head')
         @snake.sprite.anchor.set(.5, .5)
 
@@ -304,6 +315,18 @@ class MainState
         return
 
     update: ->
+        try
+            @_tryUpdate()
+        catch e
+            console.error 'Failed:', e
+            info = e + ' state:' + @getStateInformation()
+            Tracking.trackEvent 'error', 'update-exception', info
+            throw e
+
+    getStateInformation: =>
+        return @traversedNodes.join('-')
+
+    _tryUpdate: ->
         @moveSnake()
         @drawGraph()
         @drawSnake()
