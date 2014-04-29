@@ -18,9 +18,6 @@ body {
     width: 100%;
     text-align: center;
 }
-#webgl-warning {
-    font-size: 12pt;
-}
 
 .browsehappy {
     margin: 0.2em 0;

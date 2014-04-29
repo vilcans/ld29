@@ -149,7 +149,6 @@ center = (sprite) ->
 
 class IntroState
     create: ->
-        $('#webgl-warning').hide()
         Tracking.trackEvent 'state', 'intro'
 
         center @game.add.text(
@@ -432,7 +431,7 @@ class MainState
 
 start = ->
     Tracking.trackEvent 'state', 'starting'
-    game = new Phaser.Game(320, 480, Phaser.WEBGL, 'game')
+    game = new Phaser.Game(320, 480, Phaser.AUTO, 'game')
     game.state.add('main', MainState)
     game.state.add('intro', IntroState)
     game.state.start('intro')
