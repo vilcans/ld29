@@ -208,6 +208,7 @@ class MainState
         @traversedNodes = []
 
         graph = new Graph(window.graphData.layer1)
+        #graph = new Graph(window.graphData.debug)
 
         @facesRecentlyRemoved = 0
 
@@ -369,12 +370,14 @@ class MainState
 
     success: ->
         Tracking.trackEvent 'success', 'wee'
+        @sounds.music.stop()
+        @snake.kill()
         @game.time.events.add(
             500,
             ->
                 t = center(@game.add.text(
                     0, 460,
-                    'There is no soul. Don\'t try again.',
+                    'You win.\nThere is no soul.\nDon\'t try again.',
                     { font: '16px Arial', fill: '#ffffff', align: 'center' }
                 ))
                 t.anchor.y = 1
