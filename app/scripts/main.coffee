@@ -137,13 +137,9 @@ tempPoint2 = new Phaser.Point
 
 class Layer
     constructor: (@game, @name) ->
-        @sprite = @game.add.sprite(0, 0, @name)
-
-        @mask = @game.add.graphics(0, 0)
-        @mask.beginFill(0xffffff, 1.0)
-        @mask.drawRect(0, 0, 608, 906)
-        @mask.endFill()
-        @sprite.mask = @mask
+        @bitmap = @game.add.bitmapData(@game.world.width, @game.world.height)
+        @bitmap.draw(@name, 0, 0)
+        @sprite = @game.add.sprite(0, 0, @bitmap)
 
 center = (sprite) ->
     sprite.position.x = 320 / 2
@@ -227,9 +223,29 @@ class MainState
 
         graph.onRemoveFace = (face) =>
             @facesRecentlyRemoved++
-            @layer.mask.beginFill(0xffffff, 1.0)
-            @layer.mask.drawPolygon(face.polygon)
-            @layer.mask.endFill()
+            context = @layer.bitmap.context
+            # See http://stackoverflow.com/questions/8445668/how-do-you-clear-a-polygon-shaped-region-in-a-canvas-element
+            context.fillStyle = 'rgba(0, 0, 0, 1.0)'
+            context.globalCompositeOperation = 'destination-out'
+            context.beginPath()
+
+            for nodeId, i in face.nodes
+                # Move the coordinates 1 pixel away from center
+                # to paint over the fringes from antialiasing
+                x = graph.nodes[nodeId].x
+                y = graph.nodes[nodeId].y
+                tempPoint.set(x - face.x, y - face.y)
+                tempPoint.normalize()
+                x += tempPoint.x
+                y += tempPoint.y
+
+                if i == 0
+                    context.moveTo(x, y)
+                else
+                    context.lineTo(x, y)
+
+            context.fill()
+            @layer.bitmap.dirty = true
 
         @graphGraphics = @game.add.graphics(0, 0)
         @drawGraph()
