@@ -59,7 +59,6 @@ class @Snake
 
         @onNodeTraversed(headId, neckId, @nextNode)
         if @nextNode == null
-            @headDistance = edgeLength
             return false
 
         #console.log 'Switching towards node', @nextNode
