@@ -258,7 +258,11 @@ class MainState
             throw e
 
     getStateInformation: =>
-        return @traversedNodes.join('-')
+        return JSON.stringify(
+            traversedNodes: @traversedNodes
+            snakeNodes: @snake.nodes
+            nextNode: @snake.nextNode
+        )
 
     _tryUpdate: ->
         @moveSnake()
