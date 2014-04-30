@@ -342,7 +342,7 @@ class MainState
         catch e
             console.error 'Failed:', e
             info = e + ' state:' + @getStateInformation()
-            Tracking.trackEvent 'error', 'update-exception', info
+            Tracking.trackEvent 'error', 'update-exception', label: info
             throw e
 
     getStateInformation: =>
