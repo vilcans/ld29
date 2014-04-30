@@ -1,8 +1,11 @@
-config =
+@config =
     screenWidth: 320
     screenHeight: 480
     worldWidth: 608
     worldHeight: 906
+
+@tweaks =
+    showNodeNumbers: false
 
 ###
 graph = new Graph(
@@ -170,6 +173,14 @@ class MainState
         @snake.sprite.anchor.set(.5, .5)
 
         @game.camera.follow(@snake.sprite)
+
+        if tweaks.showNodeNumbers
+            for node, nodeId in graph.nodes
+                @game.add.text(
+                    node.x, node.y,
+                    "#{nodeId}"
+                    { font: '7px Arial', fill: '#ffffff' }
+                )
 
         @sounds = {
             faceoff: @game.add.audio('faceoff', 1, false)
