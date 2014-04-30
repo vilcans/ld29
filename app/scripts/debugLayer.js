@@ -1,6 +1,6 @@
 window.graphData = window.graphData || {};
 
-// Simple single polygon for debugging
+// Single triangle for debugging
 window.graphData['debug'] = {
 	"edges": [[0,1], [1,2], [2,0]],
 	"faces": [

@@ -23,44 +23,50 @@ class @Snake
         edgeLength = @getEdgeLength(0)
 
         if @headDistance >= edgeLength
-
-            headId = @nodes[0]
-            neckId = @nodes[1]
-
-            i = @nodes.length
-            while --i >= 1
-                if @nodes[i] == @nodes[0]
-                    closedLoop = @nodes[..i]
-                    console.log 'Hit myself in nodes', closedLoop
-                    console.log 'nodes are', @nodes
-                    @graph.captureNodes(closedLoop)
-                    @nodes = [@nodes[0]]
-                    break
-
-            if @nextNode? and not @graph.nodes[@nextNode].neighbors[@nodes[0]]
-                # No edge between these nodes
-                console.log 'nextNode not valid any more'
-                @nextNode = null
-
-            if @nextNode == null
-                nextCandidates = (+n for n of @graph.nodes[@nodes[0]].neighbors when +n != neckId)
-                if nextCandidates.length == 0
-                    console.log 'No possible next node'
-                else
-                    @nextNode = nextCandidates[_.random(nextCandidates.length - 1)]
-                    console.log 'Randomly chose', @nextNode
-
-            @onNodeTraversed(headId, neckId, @nextNode)
-            if @nextNode == null
+            moved = @goToNextNode()
+            if moved
+                @headDistance -= edgeLength
+            else
+                # Nowhere to go: stop
                 @headDistance = edgeLength
-                return
 
-            @headDistance -= edgeLength
-            #console.log 'Switching towards node', @nextNode
-            @nodes.unshift(@nextNode)
-            if @nodes.length > @maxSegments + 1
-                @nodes.pop()
+    goToNextNode: ->
+        headId = @nodes[0]
+        neckId = @nodes[1]
+
+        i = @nodes.length
+        while --i >= 1
+            if @nodes[i] == @nodes[0]
+                closedLoop = @nodes[..i]
+                console.log 'Hit myself in nodes', closedLoop
+                console.log 'nodes are', @nodes
+                @graph.captureNodes(closedLoop)
+                @nodes = [@nodes[0]]
+                break
+
+        if @nextNode? and not @graph.nodes[@nextNode].neighbors[@nodes[0]]
+            # No edge between these nodes
+            console.log 'nextNode not valid any more'
             @nextNode = null
+
+        if @nextNode == null
+            nextCandidates = (+n for n of @graph.nodes[@nodes[0]].neighbors when +n != neckId)
+            if nextCandidates.length == 0
+                console.log 'No possible next node'
+            else
+                @nextNode = nextCandidates[_.random(nextCandidates.length - 1)]
+                console.log 'Randomly chose', @nextNode
+
+        @onNodeTraversed(headId, neckId, @nextNode)
+        if @nextNode == null
+            @headDistance = edgeLength
+            return false
+
+        #console.log 'Switching towards node', @nextNode
+        @nodes.unshift(@nextNode)
+        if @nodes.length > @maxSegments + 1
+            @nodes.pop()
+        @nextNode = null
 
         return true
 
