@@ -43,13 +43,13 @@ class Snake
                     @nodes = [@nodes[0]]
                     break
 
-            if @nextNode? and not graph.nodes[@nextNode].neighbors[@nodes[0]]
+            if @nextNode? and not @graph.nodes[@nextNode].neighbors[@nodes[0]]
                 # No edge between these nodes
                 console.log 'nextNode not valid any more'
                 @nextNode = null
 
             if @nextNode == null
-                nextCandidates = (+n for n of graph.nodes[@nodes[0]].neighbors when +n != neckId)
+                nextCandidates = (+n for n of @graph.nodes[@nodes[0]].neighbors when +n != neckId)
                 if nextCandidates.length == 0
                     console.log 'No possible next node'
                 else
@@ -326,6 +326,7 @@ class MainState
     drawGraph: ->
         @graphGraphics.clear()
         @graphGraphics.lineStyle(2, 0x444444, .5)
+
         for edgeId, edge of graph.edgesByKey
             [node1Index, node2Index] = edge
             node1 = graph.nodes[node1Index]
@@ -438,11 +439,9 @@ class MainState
 
     render: ->
 
-start = ->
+@start = ->
     Tracking.trackEvent 'state', 'starting'
     game = new Phaser.Game(config.screenWidth, config.screenHeight, Phaser.AUTO, 'game')
     game.state.add('main', MainState)
     game.state.add('intro', IntroState)
     game.state.start('intro')
-
-start()
