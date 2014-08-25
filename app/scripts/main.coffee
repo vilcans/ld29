@@ -5,7 +5,7 @@
     worldHeight: 906
 
 @tweaks =
-    showNodeNumbers: false
+    showNodeNumbers: true
 
 ###
 graph = new Graph(
